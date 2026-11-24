@@ -18,7 +18,7 @@ def main():
     rows=[];series={};user_scores={}
     for r in f.itertuples():
         g=d[d.tags.map(lambda tags:r.topic in tags)]
-        user_scores[r.topic]=float(g.groupby('user_id').bot_style.mean().mean())
+        user_scores[r.topic]=user_balanced_style(g)
         counts=g.groupby(g.time.dt.floor('D')).size().reindex(calendar,fill_value=0)
         users=g.groupby(g.time.dt.floor('D')).user_id.nunique().reindex(calendar,fill_value=0)
         prior=counts.shift(1).rolling(7,min_periods=7).sum()
