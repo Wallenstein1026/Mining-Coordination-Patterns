@@ -1,0 +1,75 @@
+{
+  "n_accounts": 48536,
+  "n_posts": 242680,
+  "labels": {
+    "0": 30404,
+    "1": 18132
+  },
+  "split_counts": {
+    "train": 29121,
+    "validation": 9707,
+    "test": 9708
+  },
+  "models": {
+    "Text-style LR": {
+      "roc_auc": 0.6892755175773143,
+      "average_precision": 0.5656978377653243,
+      "accuracy": 0.6390605686032138,
+      "balanced_accuracy": 0.6328369057971044,
+      "f1": 0.5573521980798383,
+      "threshold": 0.37,
+      "confusion_matrix": [
+        [
+          3998,
+          2083
+        ],
+        [
+          1421,
+          2206
+        ]
+      ]
+    },
+    "Metadata LR": {
+      "roc_auc": 0.6101542420590116,
+      "average_precision": 0.46235391493647837,
+      "accuracy": 0.5818912237330037,
+      "balanced_accuracy": 0.5878705439075922,
+      "f1": 0.52218952324897,
+      "threshold": 0.37,
+      "confusion_matrix": [
+        [
+          3431,
+          2650
+        ],
+        [
+          1409,
+          2218
+        ]
+      ]
+    },
+    "Metadata RF": {
+      "roc_auc": 0.6210585004289351,
+      "average_precision": 0.48997332028621104,
+      "accuracy": 0.5843634116192831,
+      "balanced_accuracy": 0.5858940558321497,
+      "f1": 0.5155480850042022,
+      "threshold": 0.37,
+      "confusion_matrix": [
+        [
+          3526,
+          2555
+        ],
+        [
+          1480,
+          2147
+        ]
+      ]
+    }
+  },
+  "style_post_auc_all_test": 0.6387983806698895,
+  "style_post_auc_without_train_duplicates": 0.63638750178191,
+  "test_posts": 48540,
+  "test_posts_after_exact_train_overlap_removal": 45408,
+  "threshold_selection": "max validation account balanced accuracy, grid 0.10:0.01:0.90",
+  "transfer_caveat": "Text-style scores on COVID posts are uncalibrated cross-domain auxiliary scores, not CIB probabilities."
+}

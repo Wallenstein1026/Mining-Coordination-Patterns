@@ -1,0 +1,85 @@
+{
+  "checked_on": "2026-11-24",
+  "repository": "https://github.com/nghuyong/weibo-cov",
+  "version": "2.0",
+  "download_entry": "https://pan.baidu.com/s/1mxU5RbnGBNRvR4Ci-9d0Hg?pwd=jffm",
+  "published_extraction_code": "jffm",
+  "share_directory_access": "success",
+  "csv_download": "blocked_by_client_requirement",
+  "listing": [
+    {
+      "filename": "2019-12.csv",
+      "bytes": 60624172
+    },
+    {
+      "filename": "2020-01.csv",
+      "bytes": 4610279989
+    },
+    {
+      "filename": "2020-02.csv",
+      "bytes": 7914675548
+    },
+    {
+      "filename": "2020-03.csv",
+      "bytes": 5876449828
+    },
+    {
+      "filename": "2020-04.csv",
+      "bytes": 7190490644
+    },
+    {
+      "filename": "2020-05.csv",
+      "bytes": 2432148688
+    },
+    {
+      "filename": "2020-06.csv",
+      "bytes": 1752043677
+    },
+    {
+      "filename": "2020-07.csv",
+      "bytes": 1835346702
+    },
+    {
+      "filename": "2020-08.csv",
+      "bytes": 1358902951
+    },
+    {
+      "filename": "2020-09.csv",
+      "bytes": 2040438498
+    },
+    {
+      "filename": "2020-10.csv",
+      "bytes": 1276271699
+    },
+    {
+      "filename": "2020-11.csv",
+      "bytes": 1250403608
+    },
+    {
+      "filename": "2020-12.csv",
+      "bytes": 2230938272
+    },
+    {
+      "filename": "user.csv",
+      "bytes": 1308104945
+    }
+  ],
+  "normal_download_attempt": {
+    "filename": "2019-12.csv",
+    "bytes": 60624172,
+    "selected_files": 1,
+    "download_service_response_errno": 0,
+    "file_saved": false,
+    "observed_ui_message": "下载内容超50mb，请使用百度网盘客户端保存"
+  },
+  "version_1_directory": [
+    {
+      "filename": "all-geo.csv.tar.gz",
+      "bytes": 5090469087
+    },
+    {
+      "filename": "weibo-cov.csv.tar.gz",
+      "bytes": 9378043642
+    }
+  ]
+}
