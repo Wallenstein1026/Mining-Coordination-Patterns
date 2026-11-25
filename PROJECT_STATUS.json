@@ -5,6 +5,7 @@
   "previous_sample_experiments": "executed; excluded from final experiment release",
   "official_weibo_cov": "Official directory accessed; CSV download blocked by Baidu >50MB client requirement",
   "official_misbot_verification": "Official active-account file matches the mirror byte for byte; three baselines reproduced on the official download",
+  "misbot_weibo_cov_scoring": "Scoring interface and equal-user aggregation verified; awaiting the normalized Weibo-COV CSV and provenance manifest for target scoring",
   "official_data_experiments": "pending actual CSV acquisition and audit",
   "final_poster_report": "pending verified new results"
 }
