@@ -1,0 +1,14 @@
+{
+  "status": "awaiting_monthly_csv",
+  "as_of_beijing": "2026-11-25",
+  "dataset": "nghuyong/Weibo-COV",
+  "version": "2.0",
+  "selection_file": "configs/weibo_subset.json",
+  "monthly_files_expected": ["2020-09.csv", "2020-10.csv", "2020-11.csv"],
+  "monthly_files_received": [],
+  "flow": null,
+  "unique_users": null,
+  "retained_daily_posts": null,
+  "references": null,
+  "normalized_sha256": null
+}

@@ -1,0 +1,7 @@
+{
+  "start": "2020-09-01",
+  "end": "2020-11-30",
+  "timezone": "Asia/Shanghai",
+  "mid_hash_modulus": 32,
+  "mid_hash_remainder": 0
+}
