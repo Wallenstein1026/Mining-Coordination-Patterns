@@ -1,3 +1,3 @@
-# 官方数据适配器待实现
+# 官方微博数据适配器
 
-负责人 Qixiang HUA。原始 CSV 流式导入、日期/选择规则、去重、字段映射和完整性审计应输出 data/README.md 规定的本地规范表与 manifest。官方原始内容不得提交。
+`weibo_cov.py` 从官方月表流式构建固定研究子集和聚合审计。`verify_weibo_handoff.py` 使用 Chang 的实际读取入口复核哈希、行数、日期和根帖匹配。命令见[交接说明](../../docs/reviews/weibo_cov_handoff.md)，筛选规则见[数据审计](../../docs/reviews/weibo_cov_audit.md)。

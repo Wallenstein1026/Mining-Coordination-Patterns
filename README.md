@@ -4,7 +4,7 @@
 
 Jiaxin DONG · Qixiang HUA · Xiaofeng LI · Chang XU
 
-本仓库包含当前方法代码、数据接口、验证方案和团队任务。已成功访问官方 Weibo-COV 目录；正常下载提示大于 50 MB 必须使用百度网盘客户端，CSV 尚未取得，尚未生成官方语料结果。原始社交媒体数据不上传 GitHub。
+官方 Weibo-COV 2.0 的 2020 年 9–11 月三份月表已导入。原始 8,149,927 条，按预先固定的帖子 ID 哈希桶选取约 1/32，规范表保留 254,624 帖、199,851 个用户，覆盖 91/91 天。 数据已通过源端与服务器哈希核对、两次一致性重建及实际读取入口复核。Chang 的挖掘与预测结果待交付。[数据审计](docs/reviews/weibo_cov_audit.md) · [接收说明](docs/reviews/weibo_cov_handoff.md)
 
 [已完成工作](docs/WORK_DONE.md) · [四人分工与交付](docs/TEAM_TASKS.md) · [方法与验证](docs/METHODS.md) · [数据来源和当前状态](docs/DATA_STATUS.md) · [课程要求对照](docs/REQUIREMENTS_ALIGNMENT.md)
 
@@ -57,19 +57,9 @@ python src/validate_forecast.py
 
 日期尚未固定时入口明确报错。描述性流程使用全期话题筛选和 HMI，其结果只能解释回顾性模式；预测入口独立构造过去可见的候选/特征，不读取全期聚类或未来训练的 MisBot 分数。
 
-## GitHub 上传
+## 团队 GitHub 交付
 
-当前目录可直接上传至新仓库，也可在此运行以下命令并替换地址：
-
-```bash
-git init -b main
-git add .
-git commit -m "Prepare Group 28 methods and team work packages"
-git remote add origin https://github.com/YOUR_USERNAME/aiaa3111-group28.git
-git push -u origin main
-```
-
-未创建远程仓库、发布 Issue 或推送代码。三个成员任务模板已放入 `.github/ISSUE_TEMPLATE/`；建 Issue 后按实际 GitHub 账号 assign。
+按成员分支提交 PR 到 `main`。Qixiang 的分支为 `data/weibo-cov`，包含导入代码、固定配置、测试、聚合审计和接收说明。实际逐帖数据位于授权环境，代码与数据按规范表的 SHA-256 对齐。分工和个人验收记录分别维护。
 
 ## 提交时间与披露
 

@@ -6,22 +6,9 @@
 
 规范 CSV 必需列：`mid,user_id,created_at,content`；`created_at` 为北京时间、无时区字符串。官方 `_id` 映射到 `mid`，保留 `origin_weibo`、互动计数与缺失标记等额外列。根帖引用不默认是逐跳父节点。
 
-`data/weibo_manifest.json` 是实际取得文件后的来源记录，当前不预造。至少包含：
+导入器生成 `data/weibo_manifest.json`，含数据集、版本、来源网址、时区、固定抽样配置、配置文件哈希、原始文件名/字节数/哈希、规范表相对路径及 SHA-256。运行验收时，规范表和这份清单须来自同一版本。公开可查的聚合审计在 [weibo_data_audit.json](../results/weibo_data_audit.json)。
 
-```json
-{
-  "dataset": "nghuyong/Weibo-COV",
-  "version": "2.0",
-  "source_url": "https://github.com/nghuyong/weibo-cov",
-  "normalized_file": "data/processed/weibo.csv",
-  "normalized_sha256": "填写实际规范CSV的64位SHA-256",
-  "timezone": "Asia/Shanghai",
-  "selection": "填写预先固定的日期范围与选择规则",
-  "raw_files": [{"filename": "实际文件名", "bytes": 0, "sha256": "填写实际值"}]
-}
-```
-
-源文件可有多个，实际大小、计数、清洗规则和关系覆盖在 `docs/reviews/weibo_cov_audit.md` 与聚合审计中记录。不要直接复制占位内容作为已经审计的证明。
+从三张原始月表重建请运行 `python src/adapters/weibo_cov.py`。接收现成规范表的成员可以直接运行 `python src/adapters/verify_weibo_handoff.py`。[数据交接说明](../docs/reviews/weibo_cov_handoff.md)
 
 ## MisBot
 
