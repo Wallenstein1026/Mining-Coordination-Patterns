@@ -29,4 +29,6 @@
 
 `data/misbot_manifest.json` 须包含 `file`（本地相对路径）、`sha256`、`source_url`、`version`、`release_kind`（`official` 或 `mirror`）。下载镜像不能代替官方核验。来源说明见 [数据状态](../docs/DATA_STATUS.md)。
 
+当前 manifest 使用 `data/raw/misbot/official_train_data_sampled.jsonl`。可将作者公开的 `User_Instances/train_data_sampled.jsonl` 下载到此路径，运行入口会检查文件哈希。[官方文件](https://drive.google.com/file/d/1XK4X9hp3NZWmOyxIPe_cq00sLEQqH6sk/view)
+
 来源清单/manifest 不包含 cookie、下载签名、个人路径或账号级内容；原始与规范表均留在本地。

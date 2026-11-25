@@ -1,6 +1,6 @@
 # 当前结果与待完成实验
 
-`misbot_benchmark.json`、`misbot_metrics.csv`、`misbot_auc_intervals.csv` 为已实际运行的 **MisBot 活跃账号镜像辅助基线**，不是已核验的官方版本或 COVID 域准确率。来源和文件哈希见 `../data/misbot_manifest.json`，官方核验由 Xiaofeng 负责。
+`misbot_benchmark.json` 和 `misbot_metrics.csv` 记录用 **MisBot 官方活跃账号文件**复跑的辅助基线。该文件与此前使用的镜像逐字节一致。`misbot_auc_intervals.csv` 保留此前镜像运行的区间估计。这些指标评估 MisBot 源域账号标签。[输入来源和哈希](../data/misbot_manifest.json)
 
 `misbot_benchmark_summary.csv` 记录复跑的测试指标、样本数与输入哈希。模型交接元数据在 `misbot_style_model.json`，来源、文本重叠检查和复算命令见 [MisBot 审计](../docs/reviews/misbot_audit.md)。
 

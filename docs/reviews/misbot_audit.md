@@ -1,17 +1,17 @@
 # MisBot 来源审计与基线复核
 
-工作包负责人为 Xiaofeng LI，分支为 `models/misbot`。2026-11-24 由 Codex 执行数据核对、代码修改和基线复跑，负责人独立复核与验收待记录。[小组分工](../TEAM_TASKS.md)
+工作包负责人为 Xiaofeng LI，分支为 `models/misbot`。2026-11-24 由 Codex 审计镜像、修改代码并复跑基线。2026-11-25 由 Xiaofeng 下载官方文件，Codex 完成两份文件的比对和官方输入的复跑。[小组分工](../TEAM_TASKS.md)
 
 ## 数据版本和标签
 
 - 上游作者把 `User_Instances/train_data_sampled.jsonl` 定义为活跃的人工标注账号子集。论文 §2.4 报告三名标注者按多数票给出账号标签，活跃子集含 18,132 个 bot 和 30,404 个 genuine 账号。实验使用 `1=bot`、`0=genuine`。作者另行发布了弱监督的 `inference_labels.json` 和帖子真假样本，二者均在这个训练分支的输入范围之外。[官方仓库](https://github.com/whr000001/MisBot) · [论文 §2.4](https://aclanthology.org/2025.emnlp-main.1604/) · [官方字段示例](https://github.com/whr000001/MisBot/blob/main/load_example.py)
-- 镜像文件共 68,846,699 字节，SHA-256 为 `01d8170eb494367694c3403bb33b702eca19c35469c56df529c3e025778b7e16`，与小组既有记录一致。48,536 行的账号数、两个类别计数和三维数值、二十维类别字段与上游资料相符。每行有 5 条非空文本，共 242,680 条。[镜像目录](https://github.com/VladPlusIn/Research_Code/tree/main/MisBot/MisBot/User_Instances)
+- 11 月 25 日取得作者公开 Drive 中的原文件。官方文件与镜像均为 68,846,699 字节，`shasum -a 256` 均得到 `01d8170eb494367694c3403bb33b702eca19c35469c56df529c3e025778b7e16`，`cmp -s` 逐字节比对通过。本次复跑使用官方下载文件，manifest 标记为 `official`。[官方 Drive 文件](https://drive.google.com/file/d/1XK4X9hp3NZWmOyxIPe_cq00sLEQqH6sk/view) · [镜像目录](https://github.com/VladPlusIn/Research_Code/tree/main/MisBot/MisBot/User_Instances) · [输入 manifest](../../data/misbot_manifest.json)
+- 文件含 48,536 个账号。两个类别的计数及三维数值、二十维类别字段与上游资料相符。每行有 5 条非空文本，共 242,680 条。
 - 作者在 2025-08-25 公告发布了遮蔽可识别信息的版本。镜像中 48,536 个 `uid` 都是带字母前缀的编码，原文仍含 `@`（56,853 条）和 URL 形式字符串（5,195 条）。这只说明已有字段的外观，无法据此证明完全匿名。基线使用帖子风格特征和账号统计字段，描述字段仅在结构审计中计数。账号表、帖子、预测和模型文件保留本地。[作者的发布记录](https://github.com/whr000001/MisBot#updating)
-- 作者公开 Drive 目录中已核实同名文件存在。官方下载端点报告总长度为 68,846,699 字节，已收到的前 164,609 字节与镜像逐字节相同。下载中断，完整 SHA-256 一致性仍待确认。执行本次基线的文件保留 `release_kind=mirror`。[官方 Drive 文件](https://drive.google.com/file/d/1XK4X9hp3NZWmOyxIPe_cq00sLEQqH6sk/view) · [本次输入 manifest](../../data/misbot_manifest.json)
 
 ## 账号切分和指标
 
-按账号标签分层，固定 seed 28，切分 60/20/20。三个模型只在训练集拟合。验证集以 0.10 至 0.90、步长 0.01 的网格最大化账号平衡准确率，同分取最低阈值。三个模型在本次运行都选到 0.37。Text-style LR 先以帖子特征学习账号标签，再对一个账号的各帖子分数取均值用于阈值选择和评估。
+按账号标签分层，固定 seed 28，切分 60/20/20。三个模型只在训练集拟合。验证集以 0.10 至 0.90、步长 0.01 的网格最大化账号平衡准确率，同分取最低阈值。三个模型在本次运行都选到 0.37。Text-style LR 先以帖子特征学习账号标签，再对一个账号的各帖子分数取均值用于阈值选择和评估。官方文件复跑得到的三组测试指标与镜像运行一致。
 
 | 集合 | 账号 | 正例账号 | 帖子 |
 |---|---:|---:|---:|
