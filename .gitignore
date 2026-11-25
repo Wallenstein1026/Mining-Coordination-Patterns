@@ -1,0 +1,9 @@
+/.local/
+/.venv/
+**/__pycache__/
+/data/raw/
+/data/processed/
+/data/weibo_manifest.json
+/results/*.pkl
+/results/misbot_account_splits.csv
+/results/misbot_test_predictions.csv
