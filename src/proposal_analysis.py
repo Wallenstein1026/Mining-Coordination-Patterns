@@ -11,14 +11,14 @@ def main():
     d=load_weibo()
     # Local model is created by run_analysis.py; never load an untrusted pickle.
     with (RES/'text_style_model.pkl').open('rb') as handle:model=pickle.load(handle)
-    d['bot_style']=model.predict_proba(np.array([style(s) for s in d.content]))[:,1]
+    d['bot_style'] = score_post_style(d.content, model)
     calendar=pd.date_range(d.time.min().floor('D'),d.time.max().floor('D'),freq='D')
     totals=d.groupby(d.time.dt.floor('D')).size().reindex(calendar,fill_value=0)
     prior_totals=totals.shift(1).rolling(7,min_periods=7).sum()
     rows=[];series={};user_scores={}
     for r in f.itertuples():
         g=d[d.tags.map(lambda tags:r.topic in tags)]
-        user_scores[r.topic]=float(g.groupby('user_id').bot_style.mean().mean())
+        user_scores[r.topic]=user_balanced_style(g)
         counts=g.groupby(g.time.dt.floor('D')).size().reindex(calendar,fill_value=0)
         users=g.groupby(g.time.dt.floor('D')).user_id.nunique().reindex(calendar,fill_value=0)
         prior=counts.shift(1).rolling(7,min_periods=7).sum()

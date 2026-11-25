@@ -30,6 +30,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib import font_manager
+from misbot_checks import SPLITS, account_ids, audit_text_overlap, user_balanced_style
 
 ROOT = Path(__file__).resolve().parents[1]
 RES, FIG = ROOT/'results', ROOT/'figures'
@@ -77,22 +78,35 @@ def metrics(y,score,thr):
 def bot_benchmark():
     print('1. MisBot benchmark',flush=True)
     path, manifest = dataset_input('misbot')
-    records=[json.loads(l) for l in path.open()]
+    with path.open(encoding='utf-8') as handle:
+        records = [json.loads(line) for line in handle]
     dump('misbot_input_provenance.json', manifest)
-    ids=np.array([r['uid'] for r in records]); y=np.array([int(r['label']) for r in records])
-    assert len(set(ids))==len(ids)
+    ids = np.array(account_ids(records))
+    labels = [record.get('label') for record in records]
+    if any(type(label) not in (int, str) or str(label) not in ('0', '1') for label in labels):
+        raise ValueError('MisBot account labels must be encoded as 0 or 1')
+    y = np.array(labels, dtype=int)
+    if set(y) != {0, 1}:
+        raise ValueError('MisBot benchmark requires both account labels, encoded as 0 and 1')
     idx=np.arange(len(y)); train,rest=train_test_split(idx,test_size=.4,stratify=y,random_state=SEED)
     val,test=train_test_split(rest,test_size=.5,stratify=y[rest],random_state=SEED)
+    account_sets = {name: set(ids[indices]) for name, indices in zip(SPLITS, (train, val, test), strict=True)}
+    account_overlap = {f'{first}_vs_{second}': len(account_sets[first] & account_sets[second])
+                       for first, second in itertools.combinations(SPLITS, 2)}
+    if any(account_overlap.values()):
+        raise ValueError('MisBot account IDs overlap across splits')
     sets={i:s for s,ii in [('train',train),('validation',val),('test',test)] for i in ii}
     pd.DataFrame({'uid':ids,'label':y,'split':[sets[i] for i in idx]}).to_csv(RES/'misbot_account_splits.csv',index=False)
     metadata=np.array([np.log1p(np.maximum(np.asarray(r['numerical'],float),0)).tolist()+list(r['categorical']) for r in records])
-    features=[]; targets=[]; owner=[]; split=[]; normtexts=[]
+    features=[]; targets=[]; owner=[]; split=[]; rawtexts=[]; normtexts=[]
     for i,r in enumerate(records):
         for s in r['tweet']:
             if str(s).strip():
-                features.append(style(s));targets.append(y[i]);owner.append(i);split.append(sets[i]);normtexts.append(clean_text(s))
+                features.append(style(s));targets.append(y[i]);owner.append(i);split.append(sets[i])
+                rawtexts.append(s)
+                normtexts.append(clean_text(s))
     features=np.array(features);targets=np.array(targets);owner=np.array(owner);split=np.array(split)
-    tr=split=='train'; va=split=='validation'; te=split=='test'
+    tr=split=='train'; te=split=='test'
     train_texts={s for s,m in zip(normtexts,tr) if m and s}
     unique_test=np.array([bool(s) and s not in train_texts for s in normtexts]) & te
     style_model=make_pipeline(StandardScaler(),LogisticRegression(max_iter=1000,random_state=SEED))
@@ -104,29 +118,60 @@ def bot_benchmark():
     scores={'Text-style LR':account_score}
     for name,m in models.items():
         m.fit(metadata[train],y[train]);scores[name]=m.predict_proba(metadata)[:,1]
-    report={};fig,ax=plt.subplots(figsize=(7.8,4.4))
-    predictions={'uid':ids[test],'label':y[test]}
+    report={}; validation_balanced_accuracy={}; fig,ax=plt.subplots(figsize=(7.8,4.4))
+    predictions = {'uid': ids[test], 'label': y[test]}
+    validation_predictions = {'uid': ids[val], 'label': y[val]}
     for j,(name,sc) in enumerate(scores.items()):
         thresholds=np.linspace(.1,.9,81)
         thr=float(max(thresholds,key=lambda t:balanced_accuracy_score(y[val],sc[val]>=t)))
+        validation_balanced_accuracy[name] = balanced_accuracy_score(y[val], sc[val] >= thr)
         report[name]=metrics(y[test],sc[test],thr)
         a,b,_=roc_curve(y[test],sc[test]);ax.plot(a,b,lw=2.5,color=COLORS[j],label=f'{name}  AUC {report[name]["roc_auc"]:.3f}')
         predictions[name]=sc[test]
+        validation_predictions[name] = sc[val]
     ax.plot([0,1],[0,1],color='#AAB6C3',ls='--',lw=1)
     ax.set(xlabel='False positive rate',ylabel='True positive rate',xlim=(0,1),ylim=(0,1.02))
     ax.legend(loc='lower right',frameon=False,fontsize=10)
     ax.set_title(f'MisBot: {len(test):,} held-out accounts',loc='left',weight='bold',pad=14)
     save(fig,'01_bot_roc')
     pd.DataFrame(predictions).to_csv(RES/'misbot_test_predictions.csv',index=False)
+    pd.DataFrame(validation_predictions).to_csv(RES/'misbot_validation_predictions.csv', index=False)
     pd.DataFrame(report).T.drop(columns='confusion_matrix').to_csv(RES/'misbot_metrics.csv')
+    split_support = {
+        name: {'accounts': len(indices), 'positive_accounts': int(y[indices].sum()),
+               'posts': int((split == name).sum())}
+        for name, indices in zip(SPLITS, (train, val, test), strict=True)
+    }
+    split_counts = {name: support['accounts'] for name, support in split_support.items()}
+    summary = pd.DataFrame(report).T.drop(columns='confusion_matrix').rename_axis('model').reset_index()
+    summary['release_kind'] = manifest['release_kind']
+    summary['input_sha256'] = manifest['sha256']
+    for name, count in split_counts.items():
+        summary[f'n_{name}_accounts'] = count
+    summary['n_test_positive_accounts'] = split_support['test']['positive_accounts']
+    summary.to_csv(RES/'misbot_benchmark_summary.csv', index=False)
+
+    model_path = RES/'text_style_model.pkl'
+    model_path.write_bytes(pickle.dumps(style_model))
+    dump('misbot_style_model.json', {
+        'input_sha256': manifest['sha256'], 'release_kind': manifest['release_kind'],
+        'model_sha256': hashlib.sha256(model_path.read_bytes()).hexdigest(),
+        'positive_label': 1, 'features': STYLE_NAMES, 'seed': SEED,
+        'source_account_threshold': report['Text-style LR']['threshold'],
+        'python': platform.python_version(), 'numpy': np.__version__, 'sklearn': sklearn_version,
+    })
     dump('misbot_benchmark.json',{'n_accounts':len(y),'n_posts':len(features),'labels':dict(collections.Counter(map(str,y))),
-        'split_counts':{s:sum(v==s for v in sets.values()) for s in ['train','validation','test']},
+        'split_counts':split_counts, 'split_support':split_support,
+        'account_overlap':account_overlap,
+        'exact_text_overlap':audit_text_overlap(rawtexts,split),
+        'normalized_text_overlap':audit_text_overlap(normtexts,split),
         'models':report,'style_post_auc_all_test':roc_auc_score(targets[te],score_post[te]),
-        'style_post_auc_without_train_duplicates':roc_auc_score(targets[unique_test],score_post[unique_test]),
+        'style_post_auc_without_train_duplicates':(roc_auc_score(targets[unique_test],score_post[unique_test])
+                                                  if len(np.unique(targets[unique_test])) == 2 else None),
         'test_posts':int(te.sum()),'test_posts_after_exact_train_overlap_removal':int(unique_test.sum()),
-        'threshold_selection':'max validation account balanced accuracy, grid 0.10:0.01:0.90',
+        'threshold_selection':'max validation account balanced accuracy, grid 0.10:0.01:0.90, lowest threshold on ties',
+        'validation_balanced_accuracy':validation_balanced_accuracy,
         'transfer_caveat':'Text-style scores on COVID posts are uncalibrated cross-domain auxiliary scores, not CIB probabilities.'})
-    with (RES/'text_style_model.pkl').open('wb') as f:pickle.dump(style_model,f)
     return style_model
 
 def dataset_input(kind):
@@ -157,8 +202,8 @@ def dataset_input(kind):
     return data,manifest
 
 
-def load_weibo():
-    path,manifest=dataset_input('weibo')
+def load_weibo(*, source=None, write_audit=True):
+    path,manifest=dataset_input('weibo') if source is None else source
     d=pd.read_csv(path,dtype=str,keep_default_na=False)
     required=['mid','user_id','created_at','content']
     if not set(required).issubset(d.columns):raise ValueError('Normalized Weibo CSV requires '+','.join(required))
@@ -171,23 +216,44 @@ def load_weibo():
     if d.empty:raise ValueError('No valid Weibo records after input checks.')
     d['norm']=d.content.map(clean_text)
     d['tags']=d.content.map(lambda v:sorted(set(t.strip().lower() for t in re.findall(r'#([^#\n]{2,70})#',v) if t.strip())))
-    dump('weibo_audit.json',{'raw_posts':raw_n,'clean_posts':len(d),'unique_users':d.user_id.nunique(),
-        'time_min':str(d.time.min()),'time_max':str(d.time.max()),'hashtag_posts':int(d.tags.map(bool).sum()),
-        'source':manifest,'available_fields':list(d.columns),'cib_truth':'not established by this import',
-        'propagation':'Additional relationship columns require separate semantic and coverage audit.'})
+    if write_audit:
+        dump('weibo_audit.json',{'raw_posts':raw_n,'clean_posts':len(d),'unique_users':d.user_id.nunique(),
+            'time_min':str(d.time.min()),'time_max':str(d.time.max()),'hashtag_posts':int(d.tags.map(bool).sum()),
+            'source':manifest,'available_fields':list(d.columns),'cib_truth':'not established by this import',
+            'propagation':'Additional relationship columns require separate semantic and coverage audit.'})
     return d
+
+
+MIN_TOPIC_POSTS = 30
+MIN_TOPIC_USERS = 5
+BROAD_TOPIC_TAGS = {'疫情','新冠','新冠肺炎','新型冠状病毒','新型冠状病毒感染肺炎','肺炎[超话]','疫情[超话]','covid-19','新冠病毒'}
+
+
+def score_post_style(content, model):
+    scores = np.empty(len(content))
+    batch_size = 8192
+    for start in range(0, len(content), batch_size):
+        end = min(start + batch_size, len(content))
+        features = np.array([style(post) for post in content.iloc[start:end]])
+        scores[start:end] = model.predict_proba(features)[:, 1]
+    return scores
+
+
+def topic_membership(posts):
+    # Collection tags are excluded from topics. All posts remain in the mining denominators.
+    candidates = collections.defaultdict(list)
+    for index, tags in enumerate(posts.tags):
+        for tag in tags:
+            if tag not in BROAD_TOPIC_TAGS:
+                candidates[tag].append(index)
+    return {tag: indices for tag, indices in sorted(candidates.items())
+            if len(indices) >= MIN_TOPIC_POSTS and posts.iloc[indices].user_id.nunique() >= MIN_TOPIC_USERS}
 
 
 def build_topics(d,model):
     print('2. Topic features',flush=True)
-    d['bot_style']=model.predict_proba(np.array([style(s) for s in d.content]))[:,1]
-    # Broad collection tags are omitted from the unit definition, but all raw posts remain in mining denominators.
-    broad={'疫情','新冠','新冠肺炎','新型冠状病毒','新型冠状病毒感染肺炎','肺炎[超话]','疫情[超话]','covid-19','新冠病毒'}
-    membership=collections.defaultdict(list)
-    for i,tags in enumerate(d.tags):
-        for tag in tags:
-            if tag not in broad:membership[tag].append(i)
-    membership={t:ii for t,ii in sorted(membership.items()) if len(ii)>=30 and d.iloc[ii].user_id.nunique()>=5}
+    d['bot_style'] = score_post_style(d.content, model)
+    membership = topic_membership(d)
     rows=[];docs=[];profiles=[]
     for tag,ii in membership.items():
         g=d.iloc[ii];n=len(g);days=g.time.dt.floor('D').value_counts();mins=g.time.dt.floor('min').value_counts();users=g.user_id.value_counts()
@@ -200,7 +266,8 @@ def build_topics(d,model):
         row={'topic':tag,'posts':n,'users':len(users),'days':len(days),'span_days':maxe/86400,
             'duplicate':duplicate,'user_hhi':concentration,'peak_day':burst,'same_minute':sync,
             'night_share':float(hist[:6].sum()),'repost_mark':float(g.content.str.contains('//@|转发微博',regex=True).mean()),
-            'bot_style':float(g.bot_style.mean()),'hour_entropy':float(-np.sum(hist[hist>0]*np.log(hist[hist>0]))/np.log(24))}
+            'bot_style':float(g.bot_style.mean()),'user_balanced_style':user_balanced_style(g),
+            'hour_entropy':float(-np.sum(hist[hist>0]*np.log(hist[hist>0]))/np.log(24))}
         rows.append(row);profiles.append(np.r_[hist,life])
         # Remove topic hashtag strings from text so the exact topic label does not dominate text similarity.
         docs.append(' '.join(re.sub(r'#[^#\n]{2,70}#',' ',str(s)) for s in g.content))
@@ -219,7 +286,8 @@ def build_topics(d,model):
     fused=np.c_[text/np.sqrt(2),beh/np.sqrt(2)]
     f.to_csv(RES/'topic_features.csv',index=False)
     np.savez_compressed(RES/'topic_representations.npz',text=text,behavior=beh,fused=fused,profiles=np.array(profiles))
-    dump('topic_design.json',{'n_topics':len(f),'min_posts':30,'min_users':5,'excluded_broad_tags':sorted(broad),
+    dump('topic_design.json',{'n_topics':len(f),'min_posts':MIN_TOPIC_POSTS,'min_users':MIN_TOPIC_USERS,
+        'excluded_broad_tags':sorted(BROAD_TOPIC_TAGS),
         'memberships':sum(len(ii) for ii in membership.values()),'distinct_posts':len(set(itertools.chain.from_iterable(membership.values()))),
         'svd_explained_variance':float(svd.explained_variance_ratio_.sum()),'behavior_columns':behaviorcols,
         'hmi':'Mean within-sample percentile ranks of duplicate, user_hhi, peak_day, same_minute. Not a manipulation probability.'})

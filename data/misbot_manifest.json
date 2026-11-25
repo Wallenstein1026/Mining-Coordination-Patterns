@@ -1,7 +1,7 @@
 {
-  "file": "data/raw/misbot_train_data_sampled.jsonl",
+  "file": "data/raw/misbot/official_train_data_sampled.jsonl",
   "sha256": "01d8170eb494367694c3403bb33b702eca19c35469c56df529c3e025778b7e16",
-  "source_url": "https://raw.githubusercontent.com/VladPlusIn/Research_Code/main/MisBot/MisBot/User_Instances/train_data_sampled.jsonl",
-  "version": "Public mirror file retrieved and used 2026-11-23; canonical release agreement pending audit",
-  "release_kind": "mirror"
+  "source_url": "https://drive.google.com/file/d/1XK4X9hp3NZWmOyxIPe_cq00sLEQqH6sk/view",
+  "version": "Official Google Drive text release, User_Instances/train_data_sampled.jsonl. Downloaded and verified 2026-11-25.",
+  "release_kind": "official"
 }
