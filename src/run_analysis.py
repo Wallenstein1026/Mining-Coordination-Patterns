@@ -202,8 +202,8 @@ def dataset_input(kind):
     return data,manifest
 
 
-def load_weibo():
-    path,manifest=dataset_input('weibo')
+def load_weibo(*, source=None, write_audit=True):
+    path,manifest=dataset_input('weibo') if source is None else source
     d=pd.read_csv(path,dtype=str,keep_default_na=False)
     required=['mid','user_id','created_at','content']
     if not set(required).issubset(d.columns):raise ValueError('Normalized Weibo CSV requires '+','.join(required))
@@ -216,23 +216,44 @@ def load_weibo():
     if d.empty:raise ValueError('No valid Weibo records after input checks.')
     d['norm']=d.content.map(clean_text)
     d['tags']=d.content.map(lambda v:sorted(set(t.strip().lower() for t in re.findall(r'#([^#\n]{2,70})#',v) if t.strip())))
-    dump('weibo_audit.json',{'raw_posts':raw_n,'clean_posts':len(d),'unique_users':d.user_id.nunique(),
-        'time_min':str(d.time.min()),'time_max':str(d.time.max()),'hashtag_posts':int(d.tags.map(bool).sum()),
-        'source':manifest,'available_fields':list(d.columns),'cib_truth':'not established by this import',
-        'propagation':'Additional relationship columns require separate semantic and coverage audit.'})
+    if write_audit:
+        dump('weibo_audit.json',{'raw_posts':raw_n,'clean_posts':len(d),'unique_users':d.user_id.nunique(),
+            'time_min':str(d.time.min()),'time_max':str(d.time.max()),'hashtag_posts':int(d.tags.map(bool).sum()),
+            'source':manifest,'available_fields':list(d.columns),'cib_truth':'not established by this import',
+            'propagation':'Additional relationship columns require separate semantic and coverage audit.'})
     return d
+
+
+MIN_TOPIC_POSTS = 30
+MIN_TOPIC_USERS = 5
+BROAD_TOPIC_TAGS = {'疫情','新冠','新冠肺炎','新型冠状病毒','新型冠状病毒感染肺炎','肺炎[超话]','疫情[超话]','covid-19','新冠病毒'}
+
+
+def score_post_style(content, model):
+    scores = np.empty(len(content))
+    batch_size = 8192
+    for start in range(0, len(content), batch_size):
+        end = min(start + batch_size, len(content))
+        features = np.array([style(post) for post in content.iloc[start:end]])
+        scores[start:end] = model.predict_proba(features)[:, 1]
+    return scores
+
+
+def topic_membership(posts):
+    # Collection tags are excluded from topics. All posts remain in the mining denominators.
+    candidates = collections.defaultdict(list)
+    for index, tags in enumerate(posts.tags):
+        for tag in tags:
+            if tag not in BROAD_TOPIC_TAGS:
+                candidates[tag].append(index)
+    return {tag: indices for tag, indices in sorted(candidates.items())
+            if len(indices) >= MIN_TOPIC_POSTS and posts.iloc[indices].user_id.nunique() >= MIN_TOPIC_USERS}
 
 
 def build_topics(d,model):
     print('2. Topic features',flush=True)
-    d['bot_style']=model.predict_proba(np.array([style(s) for s in d.content]))[:,1]
-    # Broad collection tags are omitted from the unit definition, but all raw posts remain in mining denominators.
-    broad={'疫情','新冠','新冠肺炎','新型冠状病毒','新型冠状病毒感染肺炎','肺炎[超话]','疫情[超话]','covid-19','新冠病毒'}
-    membership=collections.defaultdict(list)
-    for i,tags in enumerate(d.tags):
-        for tag in tags:
-            if tag not in broad:membership[tag].append(i)
-    membership={t:ii for t,ii in sorted(membership.items()) if len(ii)>=30 and d.iloc[ii].user_id.nunique()>=5}
+    d['bot_style'] = score_post_style(d.content, model)
+    membership = topic_membership(d)
     rows=[];docs=[];profiles=[]
     for tag,ii in membership.items():
         g=d.iloc[ii];n=len(g);days=g.time.dt.floor('D').value_counts();mins=g.time.dt.floor('min').value_counts();users=g.user_id.value_counts()
@@ -265,7 +286,8 @@ def build_topics(d,model):
     fused=np.c_[text/np.sqrt(2),beh/np.sqrt(2)]
     f.to_csv(RES/'topic_features.csv',index=False)
     np.savez_compressed(RES/'topic_representations.npz',text=text,behavior=beh,fused=fused,profiles=np.array(profiles))
-    dump('topic_design.json',{'n_topics':len(f),'min_posts':30,'min_users':5,'excluded_broad_tags':sorted(broad),
+    dump('topic_design.json',{'n_topics':len(f),'min_posts':MIN_TOPIC_POSTS,'min_users':MIN_TOPIC_USERS,
+        'excluded_broad_tags':sorted(BROAD_TOPIC_TAGS),
         'memberships':sum(len(ii) for ii in membership.values()),'distinct_posts':len(set(itertools.chain.from_iterable(membership.values()))),
         'svd_explained_variance':float(svd.explained_variance_ratio_.sum()),'behavior_columns':behaviorcols,
         'hmi':'Mean within-sample percentile ranks of duplicate, user_hhi, peak_day, same_minute. Not a manipulation probability.'})

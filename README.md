@@ -23,7 +23,7 @@ CIB（Coordinated Inauthentic Behavior）涉及协调和身份/来源伪装；HM
 
 MisBot 官方活跃账号文件已下载。SHA-256 和逐字节比对均确认它与镜像一致，三种基线已用官方下载文件复跑。[MisBot 审计](docs/reviews/misbot_audit.md) · [基线结果](results/README.md) · [ROC 图](figures/misbot_mirror_roc.pdf)
 
-后续工作包括 Weibo-COV 正式评分与挖掘、预测验证和最终 PDF。
+Weibo-COV 风格评分已完成，覆盖 254,624 帖和 1,422 个话题。后续工作包括挖掘、预测验证和最终 PDF。[风格分数交接](docs/reviews/misbot_weibo_handoff.md)
 
 ## 环境与运行
 

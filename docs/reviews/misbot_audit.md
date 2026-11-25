@@ -47,6 +47,6 @@ python -m unittest discover -s tests
 
 运行后可核对[测试指标表](../../results/misbot_benchmark_summary.csv)、[样本及重叠审计](../../results/misbot_benchmark.json)和[模型交接元数据](../../results/misbot_style_model.json)。验证入口从本地预测逐项复算验证阈值和测试指标，并核对源文件与本地模型哈希。模型 SHA-256 对应本次本地序列化文件，跨环境重训时应重查分数与新文件哈希。
 
-`results/text_style_model.pkl` 由可信本地运行生成。收到 Qixiang 核验的 Weibo-COV CSV 和 `data/weibo_manifest.json` 后，`python src/run_analysis.py --stage all` 按 `content` 计算每帖 `bot_style`。每个话题先按 `user_id` 求各用户的发帖均值，再对用户均值等权平均，结果写入 `results/topic_features.csv` 的 `user_balanced_style`。同表的 `bot_style` 是帖子等权均值，方便 Chang 比较高活跃用户的影响。已用本次模型在 8 个构造话题上复核字段和聚合公式。
+`results/text_style_model.pkl` 由可信本地运行生成。已用该模型在官方 Weibo-COV 的 254,624 帖上计算 `bot_style`，并独立复算 1,422 个话题的 `user_balanced_style`。评分入口、字段和已核验的输入版本见[风格分数交接](misbot_weibo_handoff.md)。
 
-COVID 域的时间、话题、用户构成及转发写法可能与 MisBot 活跃账号子集不同，且目标域缺少账号及 CIB 真值。风格分数用于描述性消融，0.37 仅供源域账号基线复现。目标域准确率和 CIB 概率需要相应真值与校准。官方 Weibo-COV 正式评分等待规范 CSV 和 manifest，历史预测沿用其独立的过去可见特征。
+COVID 域的时间、话题、用户构成及转发写法可能与 MisBot 活跃账号子集不同，且目标域缺少账号及 CIB 真值。风格分数用于描述性消融，0.37 仅供源域账号基线复现。目标域准确率和 CIB 概率需要相应真值与校准。历史预测沿用其独立的过去可见特征。

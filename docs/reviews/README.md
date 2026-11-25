@@ -9,4 +9,4 @@
 - [x] 核对官方 MisBot 活跃账号文件、镜像、标签与脱敏状态。两份文件逐字节一致。[来源审计](misbot_audit.md)
 - [x] 用官方文件复跑并复算三种基线，记录账号切分和文本重叠。[基线指标表](../../results/misbot_benchmark_summary.csv)
 - [x] 冻结本地模型和验证阈值，验证话题内用户等权评分接口。[模型交接元数据](../../results/misbot_style_model.json)
-- [ ] 接收并校验 Weibo-COV 私有交接包，生成帖子风格分数和话题内用户等权结果。[Weibo-COV 交接单](weibo_cov_handoff.md)
+- [x] 验收 Weibo-COV 私有输入，评分 254,624 帖，独立复算 1,422 个话题的用户等权汇总，准备组内结果包。[风格分数交接](misbot_weibo_handoff.md)
