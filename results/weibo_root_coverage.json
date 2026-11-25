@@ -1,0 +1,12 @@
+{
+  "normalized_sha256": "99aa5cfb20806185327f19c787a0fe0378b747a8fba43892ca4a387f6a9ee4ea",
+  "referenced_posts": 209524,
+  "distinct_referenced_ids": 56762,
+  "posts_with_root_in_subset": 604,
+  "distinct_roots_in_subset": 287,
+  "posts_with_root_in_raw_months": 27494,
+  "distinct_roots_in_raw_months": 8769,
+  "extra_resolved_posts": 26890,
+  "denominator": "Retained posts with a nonempty origin_weibo; repeated references count per post.",
+  "raw_scope": "All correctly shaped records in the three input CSVs, matched by _id."
+}

@@ -1,10 +1,12 @@
 {
   "group": 28,
-  "updated": "2026-11-24",
+  "updated": "2026-11-25",
   "methods": "implemented_prototypes",
   "previous_sample_experiments": "executed; excluded from final experiment release",
-  "official_weibo_cov": "Official directory accessed; CSV download blocked by Baidu >50MB client requirement",
+  "official_weibo_cov": "官方 Weibo-COV 2.0 的 2020 年 9–11 月三份月表已导入。原始 8,149,927 条，按预先固定的帖子 ID 哈希桶选取约 1/32，规范表保留 254,624 帖、199,851 个用户，覆盖 91/91 天。",
   "official_misbot_verification": "pending",
-  "official_data_experiments": "pending actual CSV acquisition and audit",
-  "final_poster_report": "pending verified new results"
+  "official_data_experiments": "Data intake and QA complete for the fixed subset. Mining and forecasting on this release pending.",
+  "final_poster_report": "pending verified new results",
+  "chang_independent_receipt": "pending",
+  "weibo_normalized_sha256": "99aa5cfb20806185327f19c787a0fe0378b747a8fba43892ca4a387f6a9ee4ea"
 }

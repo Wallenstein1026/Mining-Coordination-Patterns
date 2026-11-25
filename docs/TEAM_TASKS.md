@@ -14,7 +14,7 @@
 分支 `data/weibo-cov`。
 
 - 优先接收统筹已取得或正在下载的官方文件，核对路径、大小、哈希和来源，不重复下载已核验文件。
-- 完成 `src/adapters/weibo_cov.py` 流式导入器，按照 [数据接口](../data/README.md) 生成本地规范表与 `data/weibo_manifest.json`。现有读取接口已准备，原始格式的流式适配器待实现。
+- 完成 `src/adapters/weibo_cov.py` 流式导入器，按照 [数据接口](../data/README.md) 生成本地规范表与 `data/weibo_manifest.json`。2026-11-25 已完成适配器和三个月表导入，复核结果见 [正式审计](reviews/weibo_cov_audit.md)。
 - 固定连续时间窗口/确定性选择规则，记录原始/选中/去重/有效行数、时区、日期覆盖、缺失与重复。不要为了结果好看再改取样规则。
 - 审核 `origin_weibo` 与互动计数：根帖引用不是逐跳父节点；报告非空比例及样本内端点匹配比例。
 - 提交 `docs/reviews/weibo_cov_audit.md` 和 `results/weibo_data_audit.json`（仅聚合统计）。原文与账号 ID 留在本地。
