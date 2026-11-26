@@ -10,6 +10,62 @@
     "validation": 9707,
     "test": 9708
   },
+  "split_support": {
+    "train": {
+      "accounts": 29121,
+      "positive_accounts": 10879,
+      "posts": 145605
+    },
+    "validation": {
+      "accounts": 9707,
+      "positive_accounts": 3626,
+      "posts": 48535
+    },
+    "test": {
+      "accounts": 9708,
+      "positive_accounts": 3627,
+      "posts": 48540
+    }
+  },
+  "account_overlap": {
+    "train_vs_validation": 0,
+    "train_vs_test": 0,
+    "validation_vs_test": 0
+  },
+  "exact_text_overlap": {
+    "train_vs_validation": {
+      "shared_texts": 818,
+      "train_posts": 5795,
+      "validation_posts": 2560
+    },
+    "train_vs_test": {
+      "shared_texts": 870,
+      "train_posts": 5901,
+      "test_posts": 2549
+    },
+    "validation_vs_test": {
+      "shared_texts": 511,
+      "validation_posts": 2111,
+      "test_posts": 2061
+    }
+  },
+  "normalized_text_overlap": {
+    "train_vs_validation": {
+      "shared_texts": 977,
+      "train_posts": 6716,
+      "validation_posts": 2997
+    },
+    "train_vs_test": {
+      "shared_texts": 1044,
+      "train_posts": 6900,
+      "test_posts": 3004
+    },
+    "validation_vs_test": {
+      "shared_texts": 614,
+      "validation_posts": 2492,
+      "test_posts": 2420
+    }
+  },
   "models": {
     "Text-style LR": {
       "roc_auc": 0.6892755175773143,
@@ -70,6 +126,11 @@
   "style_post_auc_without_train_duplicates": 0.63638750178191,
   "test_posts": 48540,
   "test_posts_after_exact_train_overlap_removal": 45408,
-  "threshold_selection": "max validation account balanced accuracy, grid 0.10:0.01:0.90",
+  "threshold_selection": "max validation account balanced accuracy, grid 0.10:0.01:0.90, lowest threshold on ties",
+  "validation_balanced_accuracy": {
+    "Text-style LR": 0.6339717409384052,
+    "Metadata LR": 0.5875488770689278,
+    "Metadata RF": 0.5905818200024979
+  },
   "transfer_caveat": "Text-style scores on COVID posts are uncalibrated cross-domain auxiliary scores, not CIB probabilities."
 }

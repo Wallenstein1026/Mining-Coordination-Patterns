@@ -1,0 +1,18 @@
+{
+  "eligible_topics": 1422,
+  "misbot_input_sha256": "01d8170eb494367694c3403bb33b702eca19c35469c56df529c3e025778b7e16",
+  "misbot_release_kind": "official",
+  "model_sha256": "447968abf32ce7899fa9e6834d1e000a742da7b58f03ab355a016722f069fbbf",
+  "output_sha256": {
+    "post_style_scores.csv": "8abd0d36be3011faf7623fc8f2d6c13ec18a470809a1f4b8d5f87f621621be6e",
+    "topic_style_scores.csv": "1661fa30c3b3c32f0382ca16457f5f29b2b13226e650908130f30aa1a20b5896"
+  },
+  "scope": "Descriptive cross-domain text-style scores for the audited Weibo-COV subset",
+  "scored_posts": 254624,
+  "topic_min_posts": 30,
+  "topic_min_users": 5,
+  "weibo_coverage_end": "2020-11-30 23:59:00.000000",
+  "weibo_coverage_start": "2020-09-01 00:00:00.000000",
+  "weibo_normalized_sha256": "99aa5cfb20806185327f19c787a0fe0378b747a8fba43892ca4a387f6a9ee4ea",
+  "weibo_users": 199851
+}

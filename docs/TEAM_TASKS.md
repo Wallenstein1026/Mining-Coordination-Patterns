@@ -23,7 +23,7 @@
 
 ## Xiaofeng LI：让辅助信号可追溯
 
-分支 `models/misbot`。
+分支 `models/misbot`。[交付进度](reviews/README.md#xiaofeng-li)
 
 - 核对官方与镜像版本、标签定义和匿名化状态；已有镜像无需重复下载，先核验它是什么。
 - 适配官方文件或明确标记的镜像，核对并按实际版本更新 `data/misbot_manifest.json`。使用 `python src/run_analysis.py --stage misbot` 复核当前三种基线。
