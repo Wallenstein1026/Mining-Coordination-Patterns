@@ -1,0 +1,60 @@
+{
+  "task": "Rank previously observed topics for next-day sample-relative hotspots.",
+  "candidate_rule": ">=5 cumulative posts, >=3 cumulative users, >=1 post in past 7 days, >=20 sample posts in past 7 days.",
+  "target_rule": ">=4 posts, >=3 users, >=2x smoothed share relative to previous 7 days.",
+  "date_config": {
+    "seed": 28,
+    "train_end": "2020-10-09",
+    "validation_start": "2020-10-11",
+    "validation_end": "2020-10-24",
+    "test_start": "2020-10-26",
+    "test_end": "2020-11-29"
+  },
+  "reported_split": "validation",
+  "splits": {
+    "embargo": {
+      "size": 1270,
+      "sum": 26
+    },
+    "train": {
+      "size": 36617,
+      "sum": 1051
+    },
+    "validation": {
+      "size": 18947,
+      "sum": 309
+    }
+  },
+  "forecast_days": 14,
+  "prevalence": 0.016308650445980895,
+  "train_frequent_motifs": [
+    "LLHH",
+    "LHHL",
+    "LLLH",
+    "LHLH"
+  ],
+  "validation_selected_family": "RF",
+  "selected_models": [
+    "Activity RF",
+    "Activity + HMI RF",
+    "Activity + HMI + patterns/clusters RF"
+  ],
+  "ap_deltas": {
+    "hmi_minus_activity": 0.00320388647347139,
+    "patterns_minus_hmi": 0.10484685082892761,
+    "full_minus_activity": 0.108050737302399
+  },
+  "paired_weekly_bootstrap": null,
+  "all_hotspot_topicdays": 1099,
+  "candidate_hotspot_topicdays": 309,
+  "candidate_hotspot_coverage": 0.28116469517743403,
+  "elapsed_seconds": 57.06504709995352,
+  "limits": [
+    "Sample-defined hotspots in one audited research subset.",
+    "Candidate coverage includes unseen or otherwise ineligible hotspots in the denominator.",
+    "The historical model uses only past-visible candidates and rolling HMI.",
+    "Standardization, clusters and motif selection use training dates; model family uses validation AP.",
+    "The forecast excludes retrospective MisBot scores.",
+    "A small number of weekly blocks limits precision of the interval."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "criteria": "Both titles explicitly refer to the same event, work or distinct issue; unclear titles scored separately.",
+  "reviewer": "single AI reviewer; only the titles and randomized pair numbers were provided before assigning judgments",
+  "counts": {
+    "within": {
+      "different": 4,
+      "unclear": 4,
+      "same_specific_topic": 4
+    },
+    "across": {
+      "unclear": 6,
+      "different": 5,
+      "same_specific_topic": 1
+    }
+  }
+}

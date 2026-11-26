@@ -1,0 +1,27 @@
+{
+  "passed": 22,
+  "checks": [
+    "Topics are unique and meet eligibility thresholds",
+    "HMI recomputes from component ranks",
+    "Topic representations are finite and aligned",
+    "Selected clustering and silhouette reconcile",
+    "All six representation/method pairs have conditional stability comparisons",
+    "Recount rule 1",
+    "Recount rule 2",
+    "Recount rule 3",
+    "Recount rule 4",
+    "Recount rule 5",
+    "Recount rule 6",
+    "Recount rule 7",
+    "Recount rule 8",
+    "Recount rule 9",
+    "Recount rule 10",
+    "Recount rule 11",
+    "Recount rule 12",
+    "Recount rule 13",
+    "Recount rule 14",
+    "Recount rule 15",
+    "Temporal windows and motif support reconcile",
+    "Apriori and FP-growth saved itemset counts match at each threshold"
+  ]
+}

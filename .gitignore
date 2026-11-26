@@ -13,3 +13,7 @@
 /results/misbot_input_provenance.json
 /results/misbot_test_predictions.csv
 /results/misbot_validation_predictions.csv
+/*_private.tar.gz
+/results/forecast_features.csv
+/results/forecast_predictions.csv
+/results/forecast_all_hotspot_outcomes.csv

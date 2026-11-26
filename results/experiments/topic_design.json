@@ -1,0 +1,29 @@
+{
+  "n_topics": 1422,
+  "min_posts": 30,
+  "min_users": 5,
+  "excluded_broad_tags": [
+    "covid-19",
+    "新冠",
+    "新冠病毒",
+    "新冠肺炎",
+    "新型冠状病毒",
+    "新型冠状病毒感染肺炎",
+    "疫情",
+    "疫情[超话]",
+    "肺炎[超话]"
+  ],
+  "memberships": 211370,
+  "distinct_posts": 117255,
+  "svd_explained_variance": 0.25128465849109716,
+  "behavior_columns": [
+    "duplicate",
+    "user_hhi",
+    "peak_day",
+    "same_minute",
+    "night_share",
+    "repost_mark",
+    "hour_entropy"
+  ],
+  "hmi": "Mean within-sample percentile ranks of duplicate, user_hhi, peak_day, same_minute. Not a manipulation probability."
+}

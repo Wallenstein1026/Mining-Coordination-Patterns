@@ -1,0 +1,32 @@
+{
+  "hotspot_windows": 2709,
+  "hotspot_topics": 1173,
+  "active_topic_days": 20756,
+  "hotspot_min_posts": 4,
+  "hotspot_min_users": 3,
+  "hotspot_min_growth": 2,
+  "growth_definition": "[(n_td+1)/(N_d+1)] / [(sum preceding 7d n_t+1)/(sum preceding 7d N+1)]",
+  "growth_history_min_sample_posts": 20,
+  "hmi_q25": 0.41273294655414905,
+  "hmi_q75": 0.5887834036568215,
+  "style_available": false,
+  "profile_ablation": "Fused + HMI",
+  "cib_informed_weight": 0.5,
+  "cib_informed_common_silhouette": 0.12322760984789086,
+  "cib_informed_ari_vs_baseline": 0.3953440580103509,
+  "auxiliary_aggregation": null,
+  "hmi_itemset_context_posts": {
+    "Low HMI": 43933,
+    "High HMI": 30681
+  },
+  "hmi_context_shared_posts": 1799,
+  "hmi_style_spearman": null,
+  "caveats": [
+    "Hotspot eligibility and HMI use the full observed period: retrospective, not validated online detection.",
+    "Day-level growth uses only the preceding 7 days, but topic screening uses all dates.",
+    "HMI strata share features with clustering and can overlap in member posts; no independent CIB validation.",
+    "Adding HMI reweights the four coordination components already present in the behavioral representation.",
+    "Any available bot-style feature is auxiliary evidence without CIB ground truth.",
+    "This analysis does not reconstruct propagation edges; relationship semantics and coverage require a separate audit."
+  ]
+}

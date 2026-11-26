@@ -1,0 +1,3 @@
+representation,auxiliary_weight,method,k,common_fused_silhouette,native_silhouette,ari_vs_baseline,subsample_ari_mean,subsample_ari_std,minimum_cluster_size
+Fused baseline,0.0,KMeans,7,0.1563984368352866,0.1563984368352866,1.0,0.7608767891052376,0.1286673978281344,121
+Fused + HMI,0.5,KMeans,7,0.12322760984789086,0.1548259354926738,0.3953440580103509,0.737455825479883,0.0894572600483239,155
