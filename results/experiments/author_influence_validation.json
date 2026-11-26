@@ -1,0 +1,26 @@
+{
+  "topic_count": 1422,
+  "small_gap_exclusive_upper_bound": 0.001,
+  "large_gap_quantile": 0.9,
+  "large_gap_inclusive_lower_bound": 0.0063564244316399185,
+  "ranking_rule": "Post count descending, then author identifier ascending within each topic",
+  "gap_after_removal_reference": "Original user-balanced topic score, held fixed",
+  "handoff_checks": [
+    "Archive contains exactly the expected three regular files",
+    "SHA-256 matches the handoff receipt: post_style_scores.csv",
+    "SHA-256 matches the handoff receipt: topic_style_scores.csv",
+    "Weibo SHA-256 matches the local manifest; the loader verifies the actual file hash",
+    "Receipt matches local Weibo dates, post count and author count",
+    "Score tables have the expected schemas",
+    "Post scores are finite and lie in the unit interval",
+    "Topic scores are finite and lie in the unit interval",
+    "Post IDs match one-to-one with full coverage",
+    "Receipt thresholds match the original descriptive experiment",
+    "Topic coverage agrees with the receipt and all independently eligible topics",
+    "All per-topic post and unique-author counts agree",
+    "All topic aggregates independently recompute: bot_style",
+    "All topic aggregates independently recompute: user_balanced_style",
+    "The original clustering contains the same topics and counts",
+    "The original feature-matrix topic order is preserved"
+  ]
+}

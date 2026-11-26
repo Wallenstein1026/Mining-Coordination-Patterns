@@ -1,0 +1,3 @@
+variant,rule,n,positives,average_precision,roc_auc,precision_top5_per_day,recall_top5_per_day,end_to_end_recall_top5_per_day,candidate_hotspot_coverage,all_hotspot_topicdays,reviewed_candidates,reviewed_positives
+original,"(5, 3, 7)",45547,763,0.2368724775873639,0.8669414119768482,0.48,0.11009174311926606,0.03380281690140845,0.30704225352112674,2485,175,84
+validation_selected,"(3, 2, 7)",61950,844,0.22376932642891878,0.8751790940395239,0.4857142857142857,0.10071090047393365,0.03420523138832998,0.33963782696177064,2485,175,85

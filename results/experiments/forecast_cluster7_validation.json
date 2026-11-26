@@ -1,0 +1,43 @@
+{
+  "date_config": {
+    "seed": 28,
+    "train_end": "2020-10-09",
+    "validation_start": "2020-10-11",
+    "validation_end": "2020-10-24",
+    "test_start": "2020-10-26",
+    "test_end": "2020-11-29"
+  },
+  "split_reported": "validation",
+  "training_rows": 36617,
+  "validation_rows": 18947,
+  "validation_positives": 309,
+  "all_validation_hotspots": 1099,
+  "window_days": 28,
+  "vocabulary_size": 16000,
+  "text_variance_explained": 0.24667721518220626,
+  "fused_dimensions": 57,
+  "training_cluster_sizes": [
+    9425,
+    4331,
+    3908,
+    1962,
+    5744,
+    4991,
+    6256
+  ],
+  "validation_cluster_sizes": [
+    6780,
+    1969,
+    1773,
+    218,
+    1931,
+    4121,
+    2155
+  ],
+  "checks": [
+    "Original candidate windows reconcile to the raw post counts",
+    "All windows end by the as-of date",
+    "Training windows are identical after removing later posts",
+    "Groups are encoded by exactly one active column"
+  ]
+}

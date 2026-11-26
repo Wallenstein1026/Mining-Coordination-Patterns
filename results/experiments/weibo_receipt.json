@@ -1,0 +1,16 @@
+{
+  "verification_date": "2026-11-25",
+  "timezone": "Asia/Shanghai",
+  "verified_by": "Codex in Chang XU's Windows workspace",
+  "verification_scope": "Normalized Weibo-COV subset compared with the sender's tracked aggregate audit",
+  "normalized_sha256": "99aa5cfb20806185327f19c787a0fe0378b747a8fba43892ca4a387f6a9ee4ea",
+  "valid_unique_posts": 254624,
+  "unique_users": 199851,
+  "days_covered": 91,
+  "first": "2020-09-01 00:00:00",
+  "last": "2020-11-30 23:59:00",
+  "daily_post_counts_match": true,
+  "nonempty_root_references": 209524,
+  "matched_root_references": 604,
+  "raw_monthly_files_rechecked": false
+}

@@ -1,0 +1,36 @@
+{
+  "method": "KMeans",
+  "k": 7,
+  "silhouette": 0.1563984368352866,
+  "cluster_sizes": {
+    "6": 201,
+    "3": 121,
+    "0": 231,
+    "1": 255,
+    "4": 224,
+    "5": 235,
+    "2": 155
+  },
+  "stability_mean": 0.7608767891052376,
+  "stability_std": 0.1286673978281344,
+  "stability_min": 0.5750984424292817,
+  "size_sensitivity": [
+    {
+      "min_posts": 40,
+      "n_topics": 1073,
+      "ari_vs_full": 0.8176035075067646
+    },
+    {
+      "min_posts": 50,
+      "n_topics": 892,
+      "ari_vs_full": 0.7239848665670504
+    },
+    {
+      "min_posts": 75,
+      "n_topics": 604,
+      "ari_vs_full": 0.845331241749545
+    }
+  ],
+  "selection": "Best seed-28 fused silhouette over k=3..8 and KMeans/Ward, with min cluster size >=10",
+  "caveat": "Descriptive transductive clustering; silhouette measures compactness, not semantic or CIB validity."
+}

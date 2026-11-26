@@ -1,9 +1,8 @@
 {
   "seed": 28,
-  "train_end": null,
-  "validation_start": null,
-  "validation_end": null,
-  "test_start": null,
-  "test_end": null,
-  "status": "Freeze dates after official data coverage audit, before test evaluation."
+  "train_end": "2020-10-09",
+  "validation_start": "2020-10-11",
+  "validation_end": "2020-10-24",
+  "test_start": "2020-10-26",
+  "test_end": "2020-11-29"
 }

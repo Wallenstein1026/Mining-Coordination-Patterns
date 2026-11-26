@@ -1,0 +1,10 @@
+{
+  "status": "observed_sample_root_references",
+  "posts": 254624,
+  "nonempty_references": 209524,
+  "matched_including_self": 604,
+  "self_references": 0,
+  "matched_other": 604,
+  "matched_fraction_of_nonempty": 0.0028827246520684983,
+  "interpretation": "Matched roots in this subset; no intermediate parent edges are observed."
+}
