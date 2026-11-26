@@ -1,0 +1,33 @@
+{
+  "dataset": "nghuyong/Weibo-COV",
+  "normalized_file": "data/processed/weibo.csv",
+  "normalized_sha256": "99aa5cfb20806185327f19c787a0fe0378b747a8fba43892ca4a387f6a9ee4ea",
+  "raw_files": [
+    {
+      "bytes": 2040438498,
+      "filename": "2020-09.csv",
+      "sha256": "85175d8be3afd7d789370a5bb0826cd28a564ed9c8b1fb82afe02eed4188ebfb"
+    },
+    {
+      "bytes": 1276271699,
+      "filename": "2020-10.csv",
+      "sha256": "abc7a1a420b21cbb4d2f67b05ca4e2b14879ed0b248fe7ee4b56b2ad1802e3c9"
+    },
+    {
+      "bytes": 1250403608,
+      "filename": "2020-11.csv",
+      "sha256": "0da6e5cbaa1b6d828aa18aa7b5e92befbf1ecca2a5fe1cc9e881d05483c9cb13"
+    }
+  ],
+  "selection": {
+    "end": "2020-11-30",
+    "mid_hash_modulus": 32,
+    "mid_hash_remainder": 0,
+    "start": "2020-09-01",
+    "timezone": "Asia/Shanghai"
+  },
+  "selection_config_sha256": "0635ab275effdc5419dae798db6ba2ed18049a79352a13b0360e8cfd8673a8d0",
+  "source_url": "https://github.com/nghuyong/weibo-cov",
+  "timezone": "Asia/Shanghai",
+  "version": "2.0"
+}

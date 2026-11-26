@@ -1,0 +1,102 @@
+{
+  "review_date": "2026-11-26",
+  "audited_base_commit": "e6cfa3e85c240124ebaeec8064e2cb94c5476422",
+  "executor": "Codex assisting Jiaxin DONG",
+  "python": "3.12.2",
+  "platform": "Darwin",
+  "numpy": "1.26.4",
+  "weibo_normalized_sha256": "99aa5cfb20806185327f19c787a0fe0378b747a8fba43892ca4a387f6a9ee4ea",
+  "unit_tests": {
+    "run": 10,
+    "passed": 10,
+    "skipped": 0
+  },
+  "independent_pipeline_checks": {
+    "descriptive": 22,
+    "retrospective": 35,
+    "development": 29,
+    "test": 38,
+    "misbot_handoff": 20
+  },
+  "independent_pipeline_checks_total": 144,
+  "additional_aggregate_checks": 28,
+  "aggregate_checks": [
+    "Normalized Weibo bytes match the submitted release SHA-256",
+    "Normalized count and day coverage reconcile",
+    "Replayed row counts: clustering_grid.csv",
+    "Replayed non-timing measurements: clustering_grid.csv",
+    "Replayed row counts: cluster_stability_comparison.csv",
+    "Replayed non-timing measurements: cluster_stability_comparison.csv",
+    "Replayed row counts: contextual_motif_comparison.csv",
+    "Replayed non-timing measurements: contextual_motif_comparison.csv",
+    "Replayed row counts: pattern_method_comparison.csv",
+    "Replayed non-timing measurements: pattern_method_comparison.csv",
+    "Replayed row counts: cib_informed_ablation.csv",
+    "Replayed non-timing measurements: cib_informed_ablation.csv",
+    "Same forecast sample support and outcome/review denominators",
+    "Top-five precision recomputes from counts: primary",
+    "Candidate recall recomputes: primary",
+    "End-to-end recall recomputes: primary",
+    "Candidate coverage recomputes: primary",
+    "Full model retains AP improvement over activity: primary",
+    "Top-five precision recomputes from counts: repeat",
+    "Candidate recall recomputes: repeat",
+    "End-to-end recall recomputes: repeat",
+    "Candidate coverage recomputes: repeat",
+    "Full model retains AP improvement over activity: repeat",
+    "AP drift is disclosed and bounded in this replication",
+    "Largest top-five hit-count drift is two",
+    "Finite replicated metric: base_ap",
+    "Finite replicated metric: full_ap",
+    "Finite replicated metric: full_precision"
+  ],
+  "numeric_comparisons": [
+    {
+      "table": "clustering_grid.csv",
+      "rows": 108,
+      "max_absolute_difference": 6.242439898329621e-11,
+      "tolerance": 1e-09,
+      "timings_compared": false
+    },
+    {
+      "table": "cluster_stability_comparison.csv",
+      "rows": 6,
+      "max_absolute_difference": 0.0,
+      "tolerance": 1e-12,
+      "timings_compared": false
+    },
+    {
+      "table": "contextual_motif_comparison.csv",
+      "rows": 44,
+      "max_absolute_difference": 0.0,
+      "tolerance": 1e-12,
+      "timings_compared": false
+    },
+    {
+      "table": "pattern_method_comparison.csv",
+      "rows": 6,
+      "max_absolute_difference": 0.0,
+      "tolerance": 1e-12,
+      "timings_compared": false
+    },
+    {
+      "table": "cib_informed_ablation.csv",
+      "rows": 7,
+      "max_absolute_difference": 1.80425896445513e-10,
+      "tolerance": 1e-09,
+      "timings_compared": false
+    }
+  ],
+  "forecast_replication_exact": false,
+  "forecast_ap_max_absolute_drift": 0.0033038651212874137,
+  "forecast_top5_max_hit_count_drift": 2,
+  "primary_forecast_environment": "Submitted Windows run; retained as the primary delivered experiment",
+  "repeat_forecast_environment": "Independent macOS rerun; identical input and configuration, no retuning",
+  "primary_vs_repeat_conclusion": "Pattern-augmented RF improves candidate ranking in both runs; HMI alone adds little. Exact RF results have small cross-platform differences.",
+  "limits": [
+    "Raw monthly CSVs were not rehashed in this review; the normalized handoff and its provenance were verified.",
+    "No independently timestamped pre-test freeze was verified; chronological testing and post-test supplementary ablations are reported as retrospective research.",
+    "Five weekly bootstrap blocks are insufficient for broad deployment claims.",
+    "CIB identity/intent and unseen-topic detection are not validated."
+  ]
+}

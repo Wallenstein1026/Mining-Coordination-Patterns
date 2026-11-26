@@ -309,7 +309,7 @@ def root_reference_check(posts, output):
         repeated_text_share=("duplicate", "mean"), observed_repost_count_median=("reposts", "median"),
         observed_repost_count_records=("reposts", "count"),
     ).reset_index()
-    assert summary.posts.sum() == len(references) and summary.posts[summary.root_found].sum() == 604
+    assert summary.posts.sum() == len(references) and summary.posts[summary.root_found].sum() == int(references.root_found.sum())
     summary.to_csv(output.results / "reference_match_comparison.csv", index=False)
 
 

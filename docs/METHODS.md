@@ -31,3 +31,9 @@ Apriori/FP-growth 对照发现标签共现，支持度以实际事务数为分�
 比较近期量、增长、Activity LR/RF、Activity+HMI、再加模式/聚类，报告 AP 与每日 Top-5 Precision/Recall，并用周分块 bootstrap 估计完整模型相对活跃度基线的 AP 差异区间。区间跨零时不声称稳定增益；相对于随机排名提升也不能替代与强基线的比较。
 
 `validate_results.py` / `validate_proposal_results.py` 检查数据与描述性结果自洽；`validate_forecast.py` 检查前向切分、前缀不变性与指标复算。检查通过只是正确性证据，不能替代用途验证。
+
+## 最终实现与结果口径
+
+正式实验入口是 `src/run_experiments.py`，输出在 `.local/experiments/standalone/`。原型帮助函数继续供实现/测试使用，README 的旧版顺序命令已统一。回顾性语义聚类为七组；主预测的六组是仅训练期拟合的活动/协调特征组，不能说成同一套全期聚类进入预测。
+
+最终图文使用组员提交的 Windows 主结果，并列报告相同数据/配置下 macOS 复算；RF 有小幅差异，未声称逐位完全一致。条件 ARI 误差条是 SD，不是置信区间。首次测试前外部冻结时间戳未验证，补充消融复用了测试期；这些比较均保留回顾性研究口径。详见 [最终审查](FINAL_REVIEW.md)。

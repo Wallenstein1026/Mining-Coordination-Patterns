@@ -4,65 +4,86 @@
 
 Jiaxin DONG · Qixiang HUA · Xiaofeng LI · Chang XU
 
-官方 Weibo-COV 2.0 的 2020 年 9–11 月三份月表已导入。原始 8,149,927 条，按预先固定的帖子 ID 哈希桶选取约 1/32，规范表保留 254,624 帖、199,851 个用户，覆盖 91/91 天。 数据已通过源端与服务器哈希核对、两次一致性重建及实际读取入口复核。Chang 的挖掘与预测结果待交付。[数据审计](docs/reviews/weibo_cov_audit.md) · [接收说明](docs/reviews/weibo_cov_handoff.md)
+[Poster.pdf](Poster.pdf) · [Report.pdf](Report.pdf) · [海报预览](Poster_preview.png) · [最终审查](docs/FINAL_REVIEW.md) · [贡献说明](docs/WORK_DONE.md)
 
-[已完成工作](docs/WORK_DONE.md) · [四人分工与交付](docs/TEAM_TASKS.md) · [方法与验证](docs/METHODS.md) · [数据来源和当前状态](docs/DATA_STATUS.md) · [课程要求对照](docs/REQUIREMENTS_ALIGNMENT.md)
+官方 Weibo-COV、MisBot 与三位成员的交付已整合，并于 2026-11-26 独立复核。报告为 **9 页正文 + 1 页披露/参考文献**；海报为 **80 × 100 cm 竖版**，包含三组核心矢量图，明确展示 CIB 与 Human-Manipulation Index (HMI)。
 
-## 主线
+## 主要结论与边界
 
-1. 按文本、时间和参与特征发现并聚类升温话题。
-2. 计算 Human-Manipulation Index (HMI)，结合 MisBot 的辅助风格信号解释协调现象。
-3. 使用 Apriori / FP-growth 与时间 motif 挖掘潜在重复模式；有可信关系字段时再分析可观察传播结构。
-4. 按时间划分训练/验证/测试，检验 HMI / 模式能否比近期发帖量等基线提高次日热点预测能力。
+- 官方 Weibo-COV 2.0，2020 年 9–11 月：从 8,149,927 帖固定选取约 1/32，保留 254,624 帖、199,851 用户、91 天；1,422 个合格话题。
+- 七组融合聚类 silhouette 0.1564。HMI 和 MisBot 风格信号帮助描述分组，但不构成 CIB 真值，也不一致改善紧凑性。
+- 两种项集算法在 0.3% 支持度下均得 54 项集；发现可重复的六小时时间模式。分组差异是回顾性关联。
+- 正式时间切分中，完整 RF 的 AP 为 0.2369，活跃度基线为 0.1476。每日审核五个话题时，主运行命中 84/175（精确率 48.0%）；独立 macOS 运行命中 83/175（47.4%），AP 0.2365。
+- **候选覆盖仅 30.7%，主运行全样本召回仅 3.38%。** 单独加入协调/HMI 特征块的 AP 增益只有 0.0013（四个滚动分量加 HMI），主要增益来自时间模式。不能据此声称预测所有热点或识别真实操纵。
 
-CIB（Coordinated Inauthentic Behavior）涉及协调和身份/来源伪装；HMI 或机器人分数都不能单独证明 CIB。当前不宣称预测有效或识别了真实操纵账号。
+原 Windows 结果作为成员交付的主结果保留。相同输入/配置的 macOS 复算存在少量 RF 数值差异，已列入 [对照表](results/final_review/forecast_replication_comparison.csv)。只有五个测试周块，首次测试前的外部冻结时间戳未核实，补充实验复用了测试期；论文和海报均披露这些限制。
 
-## 当前完成程度
+## 环境
 
-数据清洗、辅助分类、聚类、HMI、项集/时间模式和前向预测的代码原型已编写。之前确实在已下载的四字段微博样本和 MisBot 镜像上执行过实验；这些工作不能写成“没有做实验”，也不能换名当作官方语料结果。该样本按组内决定不进入最终主实验，本包不含它的结果或历史海报。
-
-MisBot 官方活跃账号文件已下载。SHA-256 和逐字节比对均确认它与镜像一致，三种基线已用官方下载文件复跑。[MisBot 审计](docs/reviews/misbot_audit.md) · [基线结果](results/README.md) · [ROC 图](figures/misbot_mirror_roc.pdf)
-
-Weibo-COV 风格评分已完成，覆盖 254,624 帖和 1,422 个话题。后续工作包括挖掘、预测验证和最终 PDF。[风格分数交接](docs/reviews/misbot_weibo_handoff.md)
-
-## 环境与运行
-
-Python 3.12，从仓库根目录执行：
+Python 3.12，依赖按 `requirements.txt` 固定。从仓库根目录运行：
 
 ```bash
 python3.12 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
+```
+
+Windows 激活命令为 `.venv\Scripts\activate`。分析入口可读取已规范化数据；原始月表导入器使用 POSIX `fcntl` 文件锁，建议在 Linux/macOS 或 WSL 导入。PDF 几何/文本检查使用 Poppler：macOS `brew install poppler`，Ubuntu `sudo apt-get install poppler-utils`。
+
+## 不需要原始数据的操作
+
+```bash
+python -m unittest discover -s tests -v
 python src/check_repository.py
+python src/build_deliverables.py
+python src/validate_deliverables.py
 ```
 
-Windows 使用 `.venv\Scripts\activate`。数据接口详见 [data/README.md](data/README.md)。填入真实官方文件及本地 manifest 后，可先运行描述性流程：
+单元测试中的官方 README 示例测试需要额外设置 `WEIBO_PUBLISHER_EXAMPLE`，缺少时会明确跳过；最终本地审查已准备哈希锁定示例，10 项全通过。PDF 构建只读取公开汇总结果，不代表重新执行了数据实验。最终输出在 `output/pdf/`，同时生成同内容的根目录提交文件。
+
+## 数据与重新执行实验
+
+原始记录、用户标识、账号级预测、模型和私有评分包不入库。官方数据入口、提取码、固定抽样和文件哈希见 [数据接口](data/README.md)、[数据来源](docs/DATA_STATUS.md) 与 [正式审计](docs/reviews/weibo_cov_audit.md)。官方原始文件需从作者发布入口下载；百度网盘大文件可能要求客户端。公开仓库不提供任何账号登录凭据。
+
+1. 将官方 2020-09、10、11 月 CSV 放入 `data/raw/original_weibo_cov/`，使用固定的 `configs/weibo_subset.json`：
 
 ```bash
-python src/run_analysis.py
-python src/supplement_analysis.py
-python src/proposal_analysis.py
-python src/validate_results.py
-python src/validate_proposal_results.py
+python src/adapters/weibo_cov.py
+python src/adapters/verify_weibo_handoff.py --check-raw
 ```
 
-只复核 MisBot：`python src/run_analysis.py --stage misbot`。该入口要求实际文件与 `data/misbot_manifest.json`，不会自动把未经核验的镜像叫作官方数据。
+也可在组内受控环境接收规范表和 manifest，放到 `data/processed/weibo.csv`、`data/weibo_manifest.json` 后运行不带 `--check-raw` 的验收。公开 [release manifest](data/weibo_release_manifest.json) 仅含相对路径和哈希，可用于核对版本；不能代替真实数据。
 
-前向验证需先冻结 `configs/forecast.json` 的日期，再运行：
+2. 将官方 MisBot 活跃账号文件按 [manifest](data/misbot_manifest.json) 放置并检查：
 
 ```bash
-python src/predict_hotspots.py
-python src/validate_forecast.py
+python src/run_analysis.py --stage misbot
+python src/validate_misbot.py
 ```
 
-日期尚未固定时入口明确报错。描述性流程使用全期话题筛选和 HMI，其结果只能解释回顾性模式；预测入口独立构造过去可见的候选/特征，不读取全期聚类或未来训练的 MisBot 分数。
+3. 使用成员交付的**正式独立入口**复跑，先描述性、验证期，再按已保存配置报告测试期：
 
-## 团队 GitHub 交付
+```bash
+python src/run_experiments.py describe
+python src/run_experiments.py forecast
+python src/run_experiments.py forecast --held-out
+python src/mining_extensions.py
+python src/forecast_extensions.py
+```
 
-按成员分支提交 PR 到 `main`。Qixiang 的分支为 `data/weibo-cov`，包含导入代码、固定配置、测试、聚合审计和接收说明。实际逐帖数据位于授权环境，代码与数据按规范表的 SHA-256 对齐。分工和个人验收记录分别维护。
+结果写入 Git 忽略的 `.local/experiments/standalone/`。主预测独立构造过去可见候选、滚动 HMI 和训练期模式/聚类；不读取全期话题筛选、全期 HMI 或未来训练的 MisBot 模型。`predict_hotspots.py` 和 `validate_forecast.py` 现在只是这套实现的兼容入口，默认验证期。
 
-## 提交时间与披露
+可选回顾性辅助信号实验：`python src/run_experiments.py describe --with-misbot`。已有组内私有评分包时，运行 `python src/misbot_handoff_experiment.py /path/to/PRIVATE_PACKAGE.tar.gz`，独立核对全部帖子和话题汇总后复跑消融。只能加载可信本地生成的 pickle。
 
-Poster.pdf：80 × 100 cm 竖版，11 月 27 日 23:59 前由一人提交 Canvas；现场展示 12 月 4 日 15:00–16:20，均为北京时间。最终海报和报告由审核后的新结果生成，不在此包中放置过期稿。
+## 团队贡献与最终提交
 
-现有代码、探索实验、图表及文字由 Codex 协助。成员应亲自检查、运行、理解和修订负责部分，按实际行为记录贡献；计划分工不等于已完成贡献。详见 [WORK_DONE.md](docs/WORK_DONE.md) 和 [RIGHTS.md](RIGHTS.md)。
+| 成员 | 已完成工作 |
+|---|---|
+| Jiaxin DONG | 基本框架、小公开数据集先行测试、统筹检查整合、最终 poster/report |
+| Qixiang HUA | 官方微博文件、固定子集、流式导入、质量与根帖覆盖审计 |
+| Xiaofeng LI | 官方 MisBot 核验、账号基线、帖子/话题辅助风格分数交接 |
+| Chang XU | 正式聚类/HMI/模式/预测实验、消融、敏感性与图表交付 |
+
+详见 [贡献与 AI 披露](docs/WORK_DONE.md)、[交付验收](docs/TEAM_TASKS.md) 及报告第 6 节。代码、执行、审查、图文均有 Codex 辅助；没有虚构未记录的独立人工签收。成员须按课程要求理解、核验并改写后提交 Canvas。
+
+海报截止：2026-11-27 23:59，北京时间。现场展示：2026-12-04 15:00–16:20。最终 `Group_28_Project.zip` 包含报告、代码、README、汇总证据和数据下载说明；海报另行提交。

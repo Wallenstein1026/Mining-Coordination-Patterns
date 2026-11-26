@@ -1,13 +1,17 @@
 {
   "group": 28,
-  "updated": "2026-11-25",
-  "methods": "implemented_prototypes",
+  "updated": "2026-11-26",
+  "methods": "Official-data methods implemented and independently reviewed",
   "previous_sample_experiments": "executed; excluded from final experiment release",
   "official_weibo_cov": "官方 Weibo-COV 2.0 的 2020 年 9–11 月三份月表已导入。原始 8,149,927 条，按预先固定的帖子 ID 哈希桶选取约 1/32，规范表保留 254,624 帖、199,851 个用户，覆盖 91/91 天。",
   "official_misbot_verification": "Official active-account file matches the mirror byte for byte; three baselines reproduced on the official download",
   "misbot_weibo_cov_scoring": "Scored all 254624 posts and 1422 eligible topics; aggregates independently recomputed and private handoff bundle prepared",
-  "official_data_experiments": "Data intake and QA complete for the fixed subset. Mining and forecasting on this release pending.",
-  "final_poster_report": "pending verified new results",
-  "chang_independent_receipt": "pending",
-  "weibo_normalized_sha256": "99aa5cfb20806185327f19c787a0fe0378b747a8fba43892ca4a387f6a9ee4ea"
+  "official_data_experiments": "Completed and independently replayed: descriptive clustering, HMI/pattern analysis, validation and test forecasting; source-domain MisBot and score handoff verified.",
+  "final_poster_report": "Completed and rendered/visually inspected: exact 80 x 100 cm vector poster (three result figures, zero raster artwork); report 9 main + 1 disclosure/reference pages.",
+  "chang_independent_receipt": "Experiment receipt committed by Chang; final normalized-data revalidation and 144 pipeline/handoff checks replayed under Jiaxin integration.",
+  "weibo_normalized_sha256": "99aa5cfb20806185327f19c787a0fe0378b747a8fba43892ca4a387f6a9ee4ea",
+  "final_integration": "Jiaxin DONG: framework, small-data pilot, final coordination/review and poster/report, with disclosed Codex assistance.",
+  "forecast_replication": "Primary Windows full RF AP 0.236872; macOS repeat 0.236541. Small cross-platform differences disclosed, not bitwise replication.",
+  "cib_truth": "Not available; coordination proxies and MisBot style do not establish inauthentic intent.",
+  "final_review_evidence": "results/final_review/audit.json and artifacts.json"
 }
