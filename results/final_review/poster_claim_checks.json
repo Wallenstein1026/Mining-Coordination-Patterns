@@ -1,0 +1,34 @@
+{
+  "n_topics": 1422,
+  "features": 57,
+  "cluster_topics": 155,
+  "cluster_silhouette": 0.7971986850322272,
+  "other_silhouette": 0.07800535208002402,
+  "cluster_high_hmi": 18,
+  "cluster_hmi_median": 0.5647855133614627,
+  "shared_sets": [
+    {
+      "hashtags": 35,
+      "posts": 103
+    },
+    {
+      "hashtags": 35,
+      "posts": 102
+    }
+  ],
+  "second_subset_of_first": true,
+  "shared_authors": 5,
+  "shared_tags_per_post_median": 135.0,
+  "shared_author_counts": [
+    39,
+    27,
+    17,
+    12,
+    8
+  ],
+  "max_posts_per_author_topic": 42,
+  "author_topic_pairs_at_least_200_posts": 0,
+  "raw_hash": "99aa5cfb20806185327f19c787a0fe0378b747a8fba43892ca4a387f6a9ee4ea",
+  "style_raw_scores_available": false,
+  "author_summary_scope": "Saved aggregate CSV and removal implementation checked; raw private style score handoff unavailable for a fresh end-to-end rerun."
+}

@@ -4,16 +4,16 @@
     100.00001166666668
   ],
   "poster_pages": 1,
-  "poster_template": "D (NavyGold)",
+  "poster_template": "C (BlueColumns), three-column adaptation",
   "poster_raster_images": 1,
-  "poster_vector_result_figures": 3,
+  "poster_vector_result_figures": 2,
   "report_main_pages": 9,
   "report_disclosure_reference_pages": 1,
   "required_headers_names_cib_hmi": "passed",
   "files": {
     "Poster.pdf": {
-      "bytes": 773188,
-      "sha256": "6b314b9f6d79d06d81254868252961c0f706c6d4bc3b6f4b4e0fb693bd7bc1e0"
+      "bytes": 740036,
+      "sha256": "8e099ecffd868861eaef0162c830342f8128f84399a702a83ffc6aa57a081504"
     },
     "Report.pdf": {
       "bytes": 151095,

@@ -1,0 +1,4 @@
+
+# Generated visual deliverables are binary assets.
+*.pdf binary
+*.png binary

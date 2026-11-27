@@ -6,7 +6,7 @@ Jiaxin DONG · Qixiang HUA · Xiaofeng LI · Chang XU
 
 [Poster.pdf](Poster.pdf) · [Report.pdf](Report.pdf) · [海报预览](Poster_preview.png) · [最终审查](docs/FINAL_REVIEW.md) · [贡献说明](docs/WORK_DONE.md)
 
-官方 Weibo-COV、MisBot 与三位成员的交付已整合，并于 2026-11-26 独立复核。报告为 **9 页正文 + 1 页披露/参考文献**；海报采用课程 **Template D（NavyGold）**，为 **80 × 100 cm 竖版**，包含三组核心矢量图，明确展示 CIB 与 Human-Manipulation Index (HMI)。
+官方 Weibo-COV、MisBot 与三位成员的交付已整合，并于 2026-11-26 独立复核。报告为 **9 页正文 + 1 页披露/参考文献**；海报采用课程 **Template C（BlueColumns）三列版**，为 **80 × 100 cm 竖版**，包含两张核心矢量图（聚类与作者影响），并保留热点预测、Conclusion 和 Future Work，明确展示 CIB 与 Human-Manipulation Index (HMI)。
 
 ## 主要结论与边界
 
@@ -16,7 +16,7 @@ Jiaxin DONG · Qixiang HUA · Xiaofeng LI · Chang XU
 - 正式时间切分中，完整 RF 的 AP 为 0.2369，活跃度基线为 0.1476。每日审核五个话题时，主运行命中 84/175（精确率 48.0%）；独立 macOS 运行命中 83/175（47.4%），AP 0.2365。
 - **候选覆盖仅 30.7%，主运行全样本召回仅 3.38%。** 单独加入协调/HMI 特征块的 AP 增益只有 0.0013（四个滚动分量加 HMI），主要增益来自时间模式。不能据此声称预测所有热点或识别真实操纵。
 
-原 Windows 结果作为成员交付的主结果保留。相同输入/配置的 macOS 复算存在少量 RF 数值差异，已列入 [对照表](results/final_review/forecast_replication_comparison.csv)。只有五个测试周块，首次测试前的外部冻结时间戳未核实，补充实验复用了测试期；论文和海报均披露这些限制。
+原 Windows 结果作为成员交付的主结果保留。相同输入/配置的 macOS 复算存在少量 RF 数值差异，已列入 [对照表](results/final_review/forecast_replication_comparison.csv)。只有五个测试周块，首次测试前的外部冻结时间戳未核实，补充实验复用了测试期；报告详细披露这些限制；新版海报的结果口径与复核范围见 [海报核验](docs/POSTER_REVIEW.md)。
 
 ## 环境
 

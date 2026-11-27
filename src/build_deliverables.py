@@ -109,190 +109,184 @@ def figures():
     for ax in [left,right]:ax.grid(axis='x' if ax==left else 'y',alpha=.15);ax.set_axisbelow(True)
     save_plot(fig,'03_forecast_utility')
 
+    poster_figures()
+
 def draw_pdf(c,path,x,y,w,h):
     pg=PdfReader(str(path)).pages[0];obj=pagexobj(pg)
     bx=list(map(float,obj.BBox));pw,ph=bx[2]-bx[0],bx[3]-bx[1];scale=min(w/pw,h/ph)
     c.saveState();c.translate(x+(w-pw*scale)/2,y+(h-ph*scale)/2);c.scale(scale,scale);c.translate(-bx[0],-bx[1]);c.doForm(makerl(c,obj));c.restoreState()
 
+def poster_figures():
+    F.mkdir(parents=True,exist_ok=True)
+    plt.rcParams.update({'font.family':'DejaVu Sans','font.size':12,'axes.spines.top':False,
+        'axes.spines.right':False,'axes.labelcolor':INK,'text.color':INK,'axes.edgecolor':'#BBC9D1',
+        'pdf.fonttype':42,'svg.fonttype':'none','savefig.facecolor':'white'})
+    topics = read('topic_tsne_display.csv')
+    c3 = topics[topics.cluster.eq(3)]
+    other = topics[topics.cluster.ne(3)]
+    high = c3[c3.upper_hmi_quartile]
+    fig, ax = plt.subplots(figsize=(3.8, 3.0), layout='constrained')
+    ax.scatter(other.tsne_1, other.tsne_2, s=9, color='#A7B8C8', alpha=.6, linewidths=0,
+               label='Other topics')
+    ax.scatter(c3.tsne_1, c3.tsne_2, s=14, color=TEAL, linewidths=0, label=f'C3 ({len(c3)} topics)')
+    ax.scatter(high.tsne_1, high.tsne_2, s=26, facecolors='none', edgecolors=GOLD, linewidths=.95,
+               label='C3, top HMI quartile')
+    ax.set(xlabel='t-SNE 1', ylabel='t-SNE 2')
+    ax.xaxis.set_major_locator(plt.MaxNLocator(7))
+    ax.yaxis.set_major_locator(plt.MaxNLocator(4))
+    ax.tick_params(labelsize=9, colors=GRAY)
+    ax.grid(alpha=.15)
+    ax.set_axisbelow(True)
+    ax.legend(frameon=False, fontsize=7, loc='upper left', ncol=2,
+              bbox_to_anchor=(-.02, 1.14), columnspacing=1, handletextpad=.15)
+    ax.invert_yaxis()
+    save_plot(fig, '04_topic_tsne')
+    author_figure()
+
+
+def author_figure():
+    a=read('author_influence_summary.csv').set_index(['cohort','top_authors_removed'])
+    fig,axes=plt.subplots(2,1,figsize=(3.8,4.5),layout='constrained')
+    for ax,col,scale,title,fmt in [
+        (axes[0],'median_post_share',100,'Post concentration','percent'),
+        (axes[1],'median_absolute_score_change',1,'Score sensitivity','score')]:
+        for cohort,label,clr,offset in [('small_gap','Small gap', '#90A9BB',-.18),('large_gap','Large gap', TEAL,.18)]:
+            vals=[a.loc[(cohort,k),col]*scale for k in [1,5]]
+            bars=ax.barh(np.arange(2)+offset,vals,height=.30,color=clr,label=label)
+            ax.bar_label(bars,labels=[f'{v:.1f}%' if fmt=='percent' else f'{v:.4f}' for v in vals],padding=3,fontsize=10)
+        ax.set_yticks([0,1],['Top 1','Top 5'],fontsize=10)
+        ax.invert_yaxis();ax.set_title(title,fontsize=12)
+        ax.set_xlim(0,a[col].max()*scale*1.38)
+        ax.grid(axis='x',alpha=.15);ax.set_axisbelow(True)
+        ax.tick_params(axis='x',labelsize=9)
+    axes[0].set_xlabel('Median post share (%)',fontsize=10)
+    axes[1].set_xlabel('Median absolute change',fontsize=10)
+    axes[1].legend(frameon=False,fontsize=9,loc='upper center',bbox_to_anchor=(.48,-.32),ncol=2)
+    save_plot(fig,'05_author_influence')
+
+
 def poster():
-    """Adapt the course's Template D (NavyGold) to the project's vector results."""
-    w, h = 80 * cm, 100 * cm
-    c = canvas.Canvas(str(OUT / 'Poster.pdf'), pagesize=(w, h), pageCompression=1)
-    c.setTitle('AIAA 3111 Group 28 Course Project Poster')
-    c.setAuthor('Group 28')
-    c.scale(w / 640, h / 800)
+    """Three columns following the course's Template C hierarchy."""
+    w,h=80*cm,100*cm
+    c=canvas.Canvas(str(OUT/'Poster.pdf'),pagesize=(w,h),pageCompression=1)
+    c.setTitle('Mining Coordination Patterns - Three Columns')
+    c.setAuthor('Group 28');c.scale(w/800,h/1000)
+    blue='#2D5DB5'; navy='#163653'; pale='#EDF3FA'; muted='#526678'; teal='#157E75'
+    cw=230; xs=[32,285,538]
+    def box(x,y,w,h,fill):
+        c.setFillColor(color(fill));c.rect(x,1000-y-h,w,h,fill=1,stroke=0)
+    def line(x,y,ex,ey,clr='#CBD8E6',weight=.7,dash=False):
+        c.setStrokeColor(color(clr));c.setLineWidth(weight);c.setDash([3,3] if dash else [])
+        c.line(x,1000-y,ex,1000-ey);c.setDash([])
+    def text(x,y,t,size=10,font='Body',fill=navy):
+        c.setFillColor(color(fill));c.setFont(font,size);c.drawString(x,1000-y,t)
+    def para(x,y,t,size=9.2,lead=12.5,fill=navy,limit=None,width=cw):
+        p=Paragraph(t,ParagraphStyle('p',fontName='Body',fontSize=size,leading=lead,textColor=color(fill)))
+        _,h=p.wrap(width,1000);p.drawOn(c,x,1000-y-h)
+        if limit is not None:assert y+h<=limit,(t[:60],y+h,limit)
+        return y+h
+    def chart(name,x,y,w,h):draw_pdf(c,F/(name+'.pdf'),x,1000-y-h,w,h)
+    def heading(x,y,title,num=None):
+        text(x,y,title,16,'BodyBold',blue)
+        line(x,y+10,x+cw,y+10,'#BCD0E8',.8)
+    def bullet(x,y,t,limit=None):
+        text(x,y+9,'•',9,'BodyBold',blue)
+        return para(x+11,y,t,9.0,12.5,limit=limit,width=cw-11)
+    box(0,0,800,1000,'#FFFFFF');box(0,0,800,148,blue)
+    text(32,25,'AIAA 3111  /  DATA MINING COURSE PROJECT',9,'BodyBold','#D4E7FA')
+    text(32,61,'Mining Coordination Patterns',28,'BodyBold','#FFFFFF')
+    text(32,94,'in Emerging Social Media Events',25,'Body','#FFFFFF')
+    text(32,124,NAMES,9.5,'Body','#FFFFFF')
+    box(697,24,68,76,'#FFFFFF')
+    c.drawImage(str(ROOT/'assets/template_d_hkust_gz.png'),713,1000-91,width=36,height=57,preserveAspectRatio=True,mask='auto')
+    text(700,116,'HKUST(GZ)',10,'BodyBold','#FFFFFF');text(698,133,'GROUP 28',10,'BodyBold','#D4E7FA')
+    box(0,148,800,4,'#65B5DB')
+    line(273,176,273,931,'#B7C6D7',.8,True);line(526,176,526,931,'#B7C6D7',.8,True)
 
-    navy = '#0B2C52'
-    gold = '#C9A24A'
-    footer_blue = '#17406E'
-    dark = '#202A37'
-    muted = '#526274'
-    on_navy = '#CCD9E8'
+    # Left column: question and data lead directly into the cluster discovery.
+    x=xs[0];heading(x,190,'Introduction')
+    para(x,211,'We study recurring patterns and unusual posting behaviors in emerging Weibo topics, '
+         'and whether past patterns help rank tomorrow\'s hotspots.',9.6,13.2,limit=283)
+    heading(x,309,'Data')
+    para(x,330,'<b>Official Weibo-COV 2.0 [1]</b><br/>September-November 2020 (91 days).<br/>'
+         'Fixed 1/32 post-ID hash sample.',9.1,12.4,limit=370)
+    box(x,382,cw,60,pale)
+    for yy,n,label in [(400,'254,624','posts'),(419,'199,851','users'),(438,'1,422','hashtag topics')]:
+        text(x+10,yy,n,14,'BodyBold',blue)
+        text(x+119,yy,label,8.5,fill=muted)
+    para(x,452,'Topic inclusion: <b>at least 30 posts and 5 authors</b>. Topics can share posts.',8.7,11.6,muted,limit=479)
+    heading(x,507,'Pattern Mining')
+    para(x,528,'<b>Shared posts explain an isolated cluster.</b> Selected: fused KMeans, k = 7; '
+         't-SNE [3] displays the topic groups.',9.1,12.2,limit=579)
+    chart('04_topic_tsne',x-4,583,cw+8,183)
+    para(x,770,'<b>Fig. 1.</b> C3: 155 topics; gold: 18 top-quartile HMI topics. Apriori [4] and FP-growth [5] '
+         'agree on <b>54 itemsets at 0.3% support</b>.',7.9,10.5,muted,limit=813)
+    box(x,821,cw,42,pale)
+    text(x+9,840,'0.797 vs. 0.078',17,'BodyBold',blue)
+    text(x+9,855,'Mean 57-D silhouette: C3 vs. remaining topics',7.4,fill=muted)
+    para(x,875,'<b>35 hashtags share exactly 103 posts</b>; another 35 share 102 of them. '
+         'These 103 posts come from <b>5 authors</b>, with a median of <b>135 tags per post</b>.',8.9,12,limit=940)
 
-    def rect(x, top, width, height, fill, radius=0):
-        c.setFillColor(color(fill))
-        if radius:
-            c.roundRect(x, 800 - top - height, width, height, radius, fill=1, stroke=0)
-        else:
-            c.rect(x, 800 - top - height, width, height, fill=1, stroke=0)
+    # Middle column: methodology then one portrait author-influence figure.
+    x=xs[1];heading(x,190,'Methods')
+    para(x,211,'Fuse text and behavior into <b>57 features</b>; compare KMeans and Ward. '
+         'MisBot [2] provides auxiliary text-style scores.',9.2,12.5,limit=264)
+    text(x,285,'Human-Manipulation Index (HMI)',10,'BodyBold')
+    box(x,296,cw,31,pale)
+    para(x+8,302,'<b>HMI = [rank(D) + rank(U)<br/>+ rank(B) + rank(S)] / 4</b>',8.9,11.3,width=cw-16,limit=326)
+    para(x,338,'Percentile ranks: D duplicate-text share; U author concentration (HHI); '
+         'B peak-day share; S same-minute post share.',8.5,11.3,muted,limit=384)
+    heading(x,409,'Anomaly Detection')
+    para(x,430,'<b>Measure author influence.</b> Compare post-weighted and equal-author style scores. '
+         'Remove the top 1 or 5 authors by post count.',9.0,12,limit=482)
+    chart('05_author_influence',x-2,491,cw+4,281)
+    para(x,780,'<b>Fig. 2.</b> Small gap: &lt;0.001 (n=1,031); large gap: top 10% (n=143). '
+         'Medians exclude empty topics for score changes: top-5 n=900 / 143.',7.9,10.5,muted,limit=824)
+    box(x,834,cw,41,pale)
+    text(x+9,862,'91.6%',22,'BodyBold',teal)
+    para(x+93,841,'<b>131/143</b> large-gap scores move closer to original equal-author scores after top-1 removal.',7.6,9.5,width=cw-102,limit=874)
+    para(x,889,'Large-gap topics have higher top-5 post share: <b>26.7% vs. 10.9%</b>. '
+         'This tests sensitivity of an aggregate score, not account authenticity.',8.5,11.2,limit=934)
 
-    def line(x, y, end_x, end_y, stroke=navy, weight=0.7):
-        c.setStrokeColor(color(stroke))
-        c.setLineWidth(weight)
-        c.line(x, 800 - y, end_x, 800 - end_y)
+    # Right column: prediction, conclusion, future directions, and citations.
+    x=xs[2];heading(x,190,'Hot Topic Prediction')
+    para(x,211,'<b>Next-day ranking with past-only inputs.</b> Train Sep 08-Oct 09; validate Oct 11-24; '
+         'test Oct 26-Nov 29, 2020 (35 issue days).',8.9,12.2,limit=263)
+    para(x,253,'Hotspot: ≥4 next-day posts, ≥3 authors and ≥2× smoothed share vs. prior 7 days.',7.5,10,muted,limit=276)
+    box(x,279,cw,90,pale)
+    text(x+10,299,'Activity RF → Full RF [6]',9.3,'BodyBold',blue)
+    text(x+10,325,'0.148 → 0.237',18,'BodyBold',blue)
+    text(x+10,340,'Average precision (AP)',8,fill=muted)
+    text(x+10,359,'44 → 84 hits / 175 reviews',10.3,'BodyBold')
+    para(x,381,'Full RF adds rolling HMI, motifs and <b>six train-fitted activity/coordination groups</b>; '
+         'it excludes MisBot. The HMI block alone adds <b>0.0013 AP</b>. Candidate coverage: <b>30.7%</b>; '
+         'overall recall: <b>3.38%</b> (84/2,485). Five reviews per day.',8.6,11.5,limit=461)
+    heading(x,472,'Conclusion')
+    y=493
+    for t in ['Shared-post overlap reveals an interpretable cluster; highly active authors can shift topic-level style scores.',
+              'Past temporal patterns help next-day ranking in this sample; HMI alone adds little predictive value.',
+              'HMI, t-SNE and style scores support manual review. They do not confirm malicious coordination or <b>Coordinated Inauthentic Behavior (CIB)</b>.']:
+        y=bullet(x,y,t,limit=672)+9
+    heading(x,697,'Future Work')
+    y=718
+    for t in ['Validate review candidates with independent labels of coordination and inauthentic behavior.',
+              'Test later periods and new events with a fresh chronological holdout.',
+              'Expand candidate coverage; assess sampling, topic overlap and author-balanced aggregation.']:
+        y=bullet(x,y,t,limit=860)+8
+    heading(x,879,'References')
+    para(x,898,'[1] Hu et al., Weibo-COV, NLP4COVID 2020.<br/>'
+         '[2] Wan et al., How Do Social Bots Participate in Misinformation Spread?, EMNLP 2025.<br/>'
+         '[3] van der Maaten &amp; Hinton, t-SNE, JMLR 2008.<br/>'
+         '[4] Agrawal &amp; Srikant, VLDB 1994. [5] Han et al., SIGMOD 2000. [6] Breiman, Random Forests, ML 2001.',6.3,8,muted,limit=949)
 
-    def text(x, baseline, label, size, *, font='Body', fill=dark, align='left'):
-        c.setFont(font, size)
-        c.setFillColor(color(fill))
-        draw = {'left': c.drawString, 'right': c.drawRightString, 'center': c.drawCentredString}
-        draw[align](x, 800 - baseline, label)
+    # A slim brand footer, as in Template C.
+    box(0,958,800,42,blue)
+    text(32,977,'HKUST(GZ)',15,'BodyBold','#FFFFFF')
+    text(32,991,'The Hong Kong University of Science and Technology (Guangzhou)',7.5,'Body','#D4E7FA')
+    text(563,977,'AIAA 3111 Data Mining · Fall 2026',8.2,'Body','#FFFFFF')
+    text(563,991,'Course Project Poster · Group 28',8.2,'Body','#FFFFFF')
+    c.showPage();c.save()
 
-    def para(x, top, width, value, size=9, leading=12.4, fill=dark):
-        p = Paragraph(value, ParagraphStyle(
-            'poster', fontName='Body', fontSize=size, leading=leading, textColor=color(fill)
-        ))
-        _, height = p.wrap(width, 800)
-        p.drawOn(c, x, 800 - top - height)
-        return top + height
-
-    def panel(x, top, width, bottom, title):
-        rect(x, top, width, bottom - top, '#FFFFFF', radius=5)
-        text(x + 11, top + 24, title, 14, font='BodyBold')
-        line(x + 11, top + 31, x + 48, top + 31, gold, 1.35)
-        return top + 39
-
-    def arrow(start, y, end, stroke=navy):
-        line(start, y, end, y, stroke)
-        line(end - 3, y - 2, end, y, stroke)
-        line(end - 3, y + 2, end, y, stroke)
-
-    def chart(name, x, top, width, height):
-        draw_pdf(c, F / (name + '.pdf'), x, 800 - top - height, width, height)
-
-    rect(0, 0, 640, 800, navy)
-    text(24, 22, 'AIAA 3111 COURSE PROJECT POSTER', 9.7, font='BodyBold', fill=gold)
-    text(24, 52, 'Mining Coordination Patterns', 24, fill='#FFFFFF')
-    text(24, 79, 'in Emerging Social Media Events', 23, fill='#FFFFFF')
-    text(24, 106, NAMES, 9.4, font='BodyItalic', fill=on_navy)
-    c.setFillColor(color('#FFFFFF'))
-    c.setStrokeColor(color(gold))
-    c.setLineWidth(1)
-    c.circle(484, 800 - 49, 23, fill=1, stroke=1)
-    c.drawImage(str(ROOT / 'assets/template_d_hkust_gz.png'),
-                473, 800 - 67, width=22, height=36, preserveAspectRatio=True, mask='auto')
-    text(515, 43, 'HKUST(GZ)', 13, font='BodyBold', fill='#FFFFFF')
-    text(515, 58, 'AIAA 3111 Data Mining', 7.3, fill=on_navy)
-    text(620, 106, 'GROUP 28', 15.5, font='BodyBold', fill=gold, align='right')
-    line(24, 125, 620, 125, gold, 1.7)
-
-    y = panel(20, 140, 292, 340, 'Problem Statement')
-    para(31, y, 270, 'Can recurring patterns in how people post help identify which '
-         'observed topics will grow tomorrow? The goal is to prioritize a short list for human review.',
-         8.5, 11.4)
-    for i, label in enumerate(['Posts', 'Topics', 'Patterns', 'Ranking']):
-        x = 58 + i * 72
-        c.setFillColor(color(gold if i == 2 else navy))
-        c.circle(x, 800 - 236, 14, fill=1, stroke=0)
-        text(x, 239, str(i + 1), 8.5, font='BodyBold', fill='#FFFFFF', align='center')
-        text(x, 259, label, 8, font='BodyBold', align='center')
-        if i < 3:
-            arrow(x + 18, 236, x + 53)
-    line(31, 274, 301, 274, '#DCE4EC')
-    text(31, 291, 'This Work: One-Line Summary', 10.6, font='BodyBold')
-    summary_end = para(31, 299, 270, 'Past posting rhythms improved next-day hotspot ranking. '
-         'A hotspot needs at least four posts, three users and twice the topic\'s reference share '
-         'from the previous seven days.', 8.4, 10.9)
-    assert summary_end <= 335, ('Problem Statement overflow', summary_end)
-
-    y = panel(324, 140, 296, 282, 'Data')
-    para(335, y, 274, '<b>Official Weibo-COV 2.0 [1]</b> | September-November 2020<br/>'
-         'Fixed 1/32 post-ID hash sample of 8.15M posts.', 8.3, 11.5)
-    for x, width, label in [(335, 71, '254,624 posts'), (421, 98, '199,851 users'), (534, 75, '91 days')]:
-        rect(x, 215, width, 18, '#EDF2F7', radius=8)
-        text(x + width / 2, 227, label, 8.2, font='BodyBold', align='center')
-    data_end = para(335, 243, 274, '<b>1,422 hashtag topics</b> had at least 30 posts and '
-         'five users. MisBot [2] account labels trained a separate model that scores posting style.',
-         8.1, 10.5)
-    assert data_end <= 277, ('Data panel overflow', data_end)
-
-    panel(20, 352, 292, 657, 'Results')
-    text(31, 397, 'Topic discovery and coordination', 9.8, font='BodyBold')
-    chart('01_coordination_comparison', 29, 403, 274, 105)
-    cluster_end = para(31, 511, 269, 'Fig. 1. The left panel shows separation in the shared feature space. '
-         'The right shows stability across 80% topic samples. Joint signals raised mean ARI '
-         'from <b>0.761 to 0.827</b>.', 7.6, 9.4, muted)
-    assert cluster_end <= 545, ('Clustering caption overflow', cluster_end)
-    line(31, 546, 301, 546, '#DCE4EC')
-    text(31, 559, 'Next-day hotspot ranking', 9.8, font='BodyBold')
-    chart('03_forecast_utility', 25, 563, 282, 76)
-    forecast_end = para(31, 640, 270, 'Fig. 2. Five reviews per day. Hits rose from 44 to 84 (83 on replay).',
-         7.4, 9.5, muted)
-    assert forecast_end <= 656, ('Forecast caption overflow', forecast_end)
-
-    y = panel(324, 294, 296, 534, 'Methodology')
-    text(335, y + 1, 'Model Overview', 9.8, font='BodyBold')
-    overview_end = para(335, y + 7, 274, 'Combine text and posting behavior. KMeans groups topics '
-         'and pattern mining finds recurring hashtags and six-hour rhythms.', 8.1, 10.3)
-    assert overview_end <= y + 32, ('Model Overview overflow', overview_end)
-    text(335, y + 39, 'Human-Manipulation Index', 9.8, font='BodyBold')
-    hmi_end = para(335, y + 43, 274, '<b>HMI = [rank(D) + rank(U) + rank(B) + rank(S)] / 4</b><br/>'
-         'D repeated text, U user concentration, B peak-day share, S same-minute posting. '
-         'Each term is a percentile rank among topics.', 8.05, 10.2)
-    assert hmi_end <= 417, ('HMI explanation overflow', hmi_end)
-    chart('02_temporal_patterns', 335, 417, 274, 85)
-    para(335, 505, 274, 'Fig. 3. The daytime rhythm LHHL (06:00-18:00) averaged '
-         '<b>39.5% vs. 20.1%</b> of windows per topic in the high- and low-HMI groups.',
-         7.4, 9.2, muted)
-
-    y = panel(324, 546, 296, 657, 'Key Findings')
-    findings = [
-        'Random forest [5] AP rose from <b>0.148 to 0.237</b>. Time patterns drove most of the gain. The HMI block added 0.0013 AP.',
-        'Candidates covered 763/2,485 hotspots (<b>30.7%</b>). Five daily reviews recovered 84 (<b>3.38%</b> overall).',
-        'HMI compares posting behavior. The data lack labels for CIB (Coordinated Inauthentic Behavior).',
-    ]
-    for i, value in enumerate(findings):
-        top = y + i * 22
-        c.setFillColor(color(gold))
-        c.circle(341, 800 - top - 6, 5.8, fill=1, stroke=0)
-        text(341, top + 8.5, str(i + 1), 6.5, font='BodyBold', fill='#FFFFFF', align='center')
-        end = para(352, top, 257, value, 7.65, 9.6)
-        assert end <= min(top + 21, 654), ('Key Findings overflow', i, end)
-
-    rect(20, 669, 136, 108, footer_blue, radius=5)
-    text(88, 705, 'HKUST(GZ)', 13, font='BodyBold', fill='#FFFFFF', align='center')
-    text(88, 720, 'AIAA 3111 Data Mining', 8, fill=on_navy, align='center')
-    text(88, 739, 'GROUP 28', 13, font='BodyBold', fill=gold, align='center')
-
-    rect(168, 669, 300, 120, '#FFFFFF', radius=5)
-    text(181, 690, 'Training and Evaluation', 10.6, font='BodyBold')
-    for i, (label, dates) in enumerate([
-        ('Train', 'Sep 08-Oct 09'), ('Validate', 'Oct 11-24'), ('Test', 'Oct 26-Nov 29')
-    ]):
-        x = 181 + i * 96
-        rect(x, 701, 84, 17, gold if i == 1 else navy, radius=4)
-        text(x + 42, 713, label, 8.6, font='BodyBold', fill='#FFFFFF', align='center')
-        text(x + 42, 729, dates, 7.1, align='center')
-        if i < 2:
-            arrow(x + 86, 709, x + 94)
-    para(181, 741, 274, 'Use only past features to rank next-day hotspots. Apriori [3] and FP-growth [4] '
-         'agreed on 54 itemsets at 0.3% support. Only 0.29% of root references matched a '
-         'post in the sample, so complete repost chains could not be reconstructed.', 7.6, 10.1)
-
-    rect(480, 669, 140, 120, footer_blue, radius=5)
-    text(489, 687, 'References', 9.4, font='BodyBold', fill='#FFFFFF')
-    references = [
-        '[1] Hu et al. <i>Weibo-COV.</i> NLP4COVID, 2020.',
-        '[2] Wan et al. <i>How Do Social Bots Participate in Misinformation Spread?</i> EMNLP, 2025.',
-        '[3] Agrawal &amp; Srikant. <i>Mining Association Rules.</i> VLDB, 1994.',
-        '[4] Han et al. <i>Mining Frequent Patterns</i> (FP-growth). SIGMOD, 2000.',
-        '[5] Breiman. <i>Random Forests.</i> Machine Learning, 2001.',
-    ]
-    y = 693
-    for reference in references:
-        y = para(489, y, 122, reference, 6.45, 7.65, on_navy) + 1.2
-    assert y <= 785, ('Poster references overflow', y)
-    c.showPage()
-    c.save()
 
 class VectorFigure(Flowable):
     def __init__(self,path,width,height):Flowable.__init__(self);self.path=path;self.width=width;self.height=height
