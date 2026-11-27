@@ -233,7 +233,7 @@ def report():
     sub('2.2 A sample-relative hotspot')
     p('Let n(t,d) be topic t\'s post count on day d and N(d) the total number of sample posts. Growth is G(t,d) = [(n(t,d)+1)/(N(d)+1)] / [(sum of n(t,j)+1)/(sum of N(j)+1)], where both sums cover the preceding seven days. A hotspot requires G at least 2, at least four posts, at least three users, and at least 20 sample posts in the reference period. This defines sampled attention growth, not an official Weibo trend label.')
     sub('2.3 Human-Manipulation Index (HMI)')
-    p('<b>HMI = [r(D) + r(U) + r(B) + r(S)] / 4.</b> Percentile ranks use average ties after rounding the raw components to 12 decimal places.')
+    p('<b>HMI = [r(D) + r(U) + r(B) + r(S)] / 4.</b> Each r is the percentile rank of that component among eligible topics. Ranks of 0.80, 0.60, 0.90 and 0.70 give an HMI of 0.75. We round raw values to 12 decimal places and assign tied values their average rank.')
     table(['Component','Operational definition'],[
         ['D: duplicate fraction','1 minus distinct normalized texts / topic posts.'],
         ['U: user concentration','HHI = sum of squared user participation shares.'],
@@ -261,10 +261,12 @@ def report():
     new('3. Methodology (continued)')
     sub('3.4 Topic representation and clustering')
     p('A topic document concatenates its posts after stripping hashtag strings. Character 2-3 gram TF-IDF uses min_df=3, max_df=0.9, at most 16,000 features and sublinear term frequency. Truncated SVD gives 16 normalized text dimensions. Behavior contains seven summary measures, a 24-bin hour histogram and a ten-bin normalized lifecycle histogram (41 dimensions), standardized then normalized. Text and behavior blocks receive equal weight in the fused representation.')
-    p('KMeans (n_init=20) and Ward linkage are compared across k=3-8. KMeans seeds 28-32 expose optimization sensitivity. The baseline is selected among seed-28 fused models by silhouette with at least ten topics per cluster. A common fused-space silhouette supports like-for-like comparisons. Conditional stability fits the clusterer on 20 random 80% topic subsamples using fixed representations and reports ARI against the reference partition. A separate six-repeat check refits representations; it is not the same stability quantity.')
+    p('KMeans (n_init=20) and Ward linkage are compared across k=3-8. KMeans seeds 28-32 expose optimization sensitivity. We select the seed-28 fused model with the highest silhouette among models with at least ten topics per cluster. The resulting baseline is seven-cluster KMeans.')
+    p('<b>Common-space silhouette</b> compares how close each topic is to its own cluster versus the nearest other cluster. We score every partition using distances in the same original text-and-behavior space. Higher values indicate clearer separation in that space.')
+    p('<b>Conditional stability</b> uses 20 random subsamples of 80% of topics with fixed features. The adjusted Rand index (ARI) compares each refit with its own full-data grouping restricted to the sampled topics. ARI adjusts for chance agreement and equals 1 for identical partitions. A separate six-repeat check also refits the features.')
     sub('3.5 CIB-informed auxiliary representations')
-    p('We append standardized HMI, user-balanced MisBot style, or both to the fused representation. Joint weights 0.25, 0.50 and 1.00 are descriptive sensitivity settings. Adding HMI reweights coordination components already present in behavior, so improved separation of HMI profiles cannot independently validate CIB. We compare common-space compactness, conditional stability and changes in grouping without treating any weight as a validated manipulation classifier.')
-    p('A text-style logistic regression uses 12 simple style measures. Post scores inherit account-level supervision during training; source-domain evaluation averages the scores within each held-out account. COVID topic scores average posts within each user, then weight users equally. A post-weighted alternative and influential-author sensitivity are supplementary controls. COVID scores are uncalibrated transfer signals.')
+    p('Figure 1 defines the feature additions and their weights. The sensitivity analysis also checks joint weights of 0.50 and 1.00.')
+    p('The MisBot text-style logistic regression uses 12 style measures and account labels. Source-domain evaluation averages post scores within each held-out account. For each COVID topic, we first average each user\'s post scores and then give each user equal weight. A post-weighted alternative and influential-author sensitivity are supplementary controls. COVID scores are uncalibrated transfer signals.')
     sub('3.6 Itemsets and temporal motifs')
     p('Each post is a hashtag transaction; all retained posts remain in the support denominator. Apriori and FP-growth are compared at support 0.3%, 0.5% and 1.0%. Rules require confidence at least 0.5 and lift at least 1.5. Shared itemset counts are algorithm agreement, not a count of independent validated events.')
     p('For topic-days with at least four posts, four six-hour bucket counts are coded H if above that day\'s median and L otherwise. We compare topic-weighted motif proportions across HMI quartiles and growth contexts. Same-topic comparisons reduce topic composition differences; timing overlap with HMI and retrospective hotspot selection still prevents causal interpretation.')
@@ -274,11 +276,13 @@ def report():
     new('4. Experiments: Clustering and Auxiliary Signals')
     p('The 1,422 eligible topics contain 211,370 memberships in 117,255 distinct posts. The chosen fused KMeans has k=7, silhouette 0.1564 and cluster sizes 121-255. Text-only KMeans has the highest conditional mean ARI (0.8864) at fixed k=7; fused KMeans has 0.7609. Thus compactness in the fused space and perturbation stability favor different representations.')
     fig('01_coordination_comparison',175)
-    caption('Figure 1. Common-space separation and conditional 80% topic-subsample stability. Error bars are SD across 20 repeats, not confidence intervals or evidence of a significant improvement.')
-    table(['Representation','Common silhouette','Mean ARI +/- SD'],[
-        ['Fused baseline','0.1564','0.7609 +/- 0.1287'],['Add HMI (0.50)','0.1232','0.7375 +/- 0.0895'],
-        ['Add user-balanced style (0.50)','0.1413','0.7126 +/- 0.0938'],['Joint signals (0.25)','0.1540','0.8271 +/- 0.1178']], [245,110,width-355])
-    p('Low-weight joint signals preserve most common-space separation while changing partitions; high weight can increase conditional stability while sharply reducing common-space silhouette. These are representation trade-offs. HMI alone is not a compactness improvement, and no statistical significance is claimed for the stability difference. End-to-end feature refits yield mean fused ARI about 0.751 and minimum 0.548, indicating meaningful sensitivity.')
+    caption('Figure 1. The poster\'s “Topic discovery and coordination” panel uses these four vertical-axis labels. Each row groups the same 1,422 topics into seven clusters with KMeans. Left: separation in the original fused space. Right: agreement with each setup\'s full-data grouping (mean ARI and standard deviation across 20 subsamples).')
+    table(['Poster axis label','Features used to fit KMeans','Silhouette','Mean ARI +/- SD'],[
+        ['Fused baseline','Text and posting-behavior features.','0.1564','0.7609 +/- 0.1287'],
+        ['Add HMI','Baseline plus standardized HMI weighted by 0.50.','0.1232','0.7375 +/- 0.0895'],
+        ['Add user-balanced style','Baseline plus the standardized MisBot style score (weight 0.50). Each author counts equally within their topic.','0.1413','0.7126 +/- 0.0938'],
+        ['Joint signals (w = 0.25)','Baseline plus both standardized signals, each scaled by 0.25 / sqrt(2).','0.1540','0.8271 +/- 0.1178']], [106,235,59,width-400])
+    p('The baseline already includes the four raw HMI components. Adding their rank average gives them extra influence on distances: unrelated topics with similar bursts can appear closer. HMI alone lowers silhouette to 0.1232 and gives an ARI of 0.3953 against the baseline. The joint setup raises observed subsample stability while slightly lowering silhouette. End-to-end feature refits give the baseline a mean ARI of 0.751 and a minimum of 0.548.')
     sub('4.1 MisBot source-domain benchmark')
     table(['Model','Account test AUC','Account AP','F1'],[
         ['Text-style LR','0.6893','0.5657','0.5574'],['Metadata LR','0.6102','0.4624','0.5222'],['Metadata RF','0.6211','0.4900','0.5155']], [200,100,100,width-400])
