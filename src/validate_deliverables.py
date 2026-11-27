@@ -1,4 +1,4 @@
-"""Verify final PDF geometry, content, page count and vector-only poster artwork."""
+"""Verify PDF geometry, report sections and vector poster charts."""
 from pathlib import Path
 import hashlib, json, subprocess
 from pdfrw import PdfReader
@@ -22,19 +22,23 @@ def main():
     box=list(map(float,a.pages[0].MediaBox));w=(box[2]-box[0])*2.54/72;h=(box[3]-box[1])*2.54/72
     assert abs(w-80)<1e-4 and abs(h-100)<1e-4
     p,t=text(poster),text(report)
-    for phrase in ['AIAA 3111 COURSE PROJECT POSTER','GROUP 28','Jiaxin DONG','Qixiang HUA','Xiaofeng LI','Chang XU','Human-Manipulation Index','HMI =','30.7%','3.38%']:
+    for phrase in ['AIAA 3111 COURSE PROJECT POSTER','GROUP 28','Jiaxin DONG','Qixiang HUA','Xiaofeng LI','Chang XU','Human-Manipulation Index','HMI =','30.7%','3.38%','Problem Statement','Key Findings','Training and Evaluation']:
         assert phrase in p,phrase
     pages=[s for s in t.split('\f') if s.strip()]
-    assert len(pages)==10 and '6. Disclosures and References' in pages[9]
-    assert '6. Disclosures and References' not in ''.join(pages[:9])
-    for phrase in ['2. Problem Formulation','3. Methodology','4. Experiments','5. Conclusion','0.2365','47.43%','3.38%','Codex']:
+    assert len(pages)==10 and pages[9].index('6. Disclosures') < pages[9].index('References')
+    assert '6. Disclosures' not in ''.join(pages[:9])
+    for phrase in ['1. Introduction','2. Problem Formulation','3. Methodology','4. Experiments','5. Conclusion and Limitations','0.2365','47.43%','3.38%','Codex']:
         assert phrase in t,phrase
-    assert images(a.pages[0].Resources)==0,'Poster contains raster artwork'
+    assert images(a.pages[0].Resources)==1, 'The template crest should be the only raster image'
+    for stem in ['01_coordination_comparison', '02_temporal_patterns', '03_forecast_utility']:
+        chart = PdfReader(str(ROOT/'figures/final'/f'{stem}.pdf')).pages[0]
+        assert images(chart.Resources)==0, f'{stem} contains raster artwork'
     for path in [poster,report]:assert path.read_bytes()==(ROOT/'output/pdf'/path.name).read_bytes()
-    receipt={'poster_cm':[w,h],'poster_pages':1,'poster_raster_images':0,'poster_result_figures':3,
+    receipt={'poster_cm':[w,h],'poster_pages':1,'poster_template':'D (NavyGold)',
+        'poster_raster_images':1,'poster_vector_result_figures':3,
         'report_main_pages':9,'report_disclosure_reference_pages':1,'required_headers_names_cib_hmi':'passed',
         'files':{path.name:{'bytes':path.stat().st_size,'sha256':hashlib.sha256(path.read_bytes()).hexdigest()} for path in [poster,report]}}
     (ROOT/'results/final_review/artifacts.json').write_text(json.dumps(receipt,indent=2)+'\n')
-    print('PDF geometry, names, CIB/HMI, 9+1 report pages, matching copies and vector-only poster passed.')
+    print('PDF geometry, required headings, 9+1 report pages, matching copies and vector charts passed.')
 
 if __name__=='__main__':main()

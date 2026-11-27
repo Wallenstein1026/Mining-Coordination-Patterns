@@ -6,7 +6,7 @@ Jiaxin DONG · Qixiang HUA · Xiaofeng LI · Chang XU
 
 [Poster.pdf](Poster.pdf) · [Report.pdf](Report.pdf) · [海报预览](Poster_preview.png) · [最终审查](docs/FINAL_REVIEW.md) · [贡献说明](docs/WORK_DONE.md)
 
-官方 Weibo-COV、MisBot 与三位成员的交付已整合，并于 2026-11-26 独立复核。报告为 **9 页正文 + 1 页披露/参考文献**；海报为 **80 × 100 cm 竖版**，包含三组核心矢量图，明确展示 CIB 与 Human-Manipulation Index (HMI)。
+官方 Weibo-COV、MisBot 与三位成员的交付已整合，并于 2026-11-26 独立复核。报告为 **9 页正文 + 1 页披露/参考文献**；海报采用课程 **Template D（NavyGold）**，为 **80 × 100 cm 竖版**，包含三组核心矢量图，明确展示 CIB 与 Human-Manipulation Index (HMI)。
 
 ## 主要结论与边界
 

@@ -7,7 +7,7 @@
   "official_misbot_verification": "Official active-account file matches the mirror byte for byte; three baselines reproduced on the official download",
   "misbot_weibo_cov_scoring": "Scored all 254624 posts and 1422 eligible topics; aggregates independently recomputed and private handoff bundle prepared",
   "official_data_experiments": "Completed and independently replayed: descriptive clustering, HMI/pattern analysis, validation and test forecasting; source-domain MisBot and score handoff verified.",
-  "final_poster_report": "Completed and rendered/visually inspected: exact 80 x 100 cm vector poster (three result figures, zero raster artwork); report 9 main + 1 disclosure/reference pages.",
+  "final_poster_report": "Completed and rendered/visually inspected: exact 80 x 100 cm portrait poster (Template D, three vector result figures and the template crest); report 9 main pages plus a page with separate Disclosures and References sections.",
   "chang_independent_receipt": "Experiment receipt committed by Chang; final normalized-data revalidation and 144 pipeline/handoff checks replayed under Jiaxin integration.",
   "weibo_normalized_sha256": "99aa5cfb20806185327f19c787a0fe0378b747a8fba43892ca4a387f6a9ee4ea",
   "final_integration": "Jiaxin DONG: framework, small-data pilot, final coordination/review and poster/report, with disclosed Codex assistance.",

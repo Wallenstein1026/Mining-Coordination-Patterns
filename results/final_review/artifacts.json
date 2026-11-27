@@ -4,19 +4,20 @@
     100.00001166666668
   ],
   "poster_pages": 1,
-  "poster_raster_images": 0,
-  "poster_result_figures": 3,
+  "poster_template": "D (NavyGold)",
+  "poster_raster_images": 1,
+  "poster_vector_result_figures": 3,
   "report_main_pages": 9,
   "report_disclosure_reference_pages": 1,
   "required_headers_names_cib_hmi": "passed",
   "files": {
     "Poster.pdf": {
-      "bytes": 100726,
-      "sha256": "ee83174aafecbcd27a4c3692919ff3f422346df028db36ef01c2f01452a0fd85"
+      "bytes": 773188,
+      "sha256": "6b314b9f6d79d06d81254868252961c0f706c6d4bc3b6f4b4e0fb693bd7bc1e0"
     },
     "Report.pdf": {
-      "bytes": 148152,
-      "sha256": "0b0d4416db98391951e36ba73adcd3814644c2359da89ca28339779782ddce23"
+      "bytes": 151095,
+      "sha256": "3fceb348de721b3f65be390890f095438a5fe8437836f56ac20b2b0c7b12963e"
     }
   }
 }
